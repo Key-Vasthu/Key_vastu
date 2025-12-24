@@ -1,0 +1,92 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300">
+  <defs>
+    <linearGradient id="vpGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#d4a418"/>
+      <stop offset="50%" stop-color="#fbbf24"/>
+      <stop offset="100%" stop-color="#b8860b"/>
+    </linearGradient>
+    <linearGradient id="vpBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e3a5f"/>
+      <stop offset="100%" stop-color="#162d4d"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="300" height="300" fill="#fefcf3"/>
+  
+  <!-- Outer border -->
+  <rect x="10" y="10" width="280" height="280" fill="none" stroke="url(#vpGold)" stroke-width="3"/>
+  
+  <!-- 9x9 Vasthu Grid (81 padas) -->
+  <g stroke="#d4a418" stroke-width="0.5" fill="none">
+    <!-- Vertical lines -->
+    <line x1="41.1" y1="10" x2="41.1" y2="290"/>
+    <line x1="72.2" y1="10" x2="72.2" y2="290"/>
+    <line x1="103.3" y1="10" x2="103.3" y2="290"/>
+    <line x1="134.4" y1="10" x2="134.4" y2="290"/>
+    <line x1="165.5" y1="10" x2="165.5" y2="290"/>
+    <line x1="196.6" y1="10" x2="196.6" y2="290"/>
+    <line x1="227.7" y1="10" x2="227.7" y2="290"/>
+    <line x1="258.8" y1="10" x2="258.8" y2="290"/>
+    <!-- Horizontal lines -->
+    <line x1="10" y1="41.1" x2="290" y2="41.1"/>
+    <line x1="10" y1="72.2" x2="290" y2="72.2"/>
+    <line x1="10" y1="103.3" x2="290" y2="103.3"/>
+    <line x1="10" y1="134.4" x2="290" y2="134.4"/>
+    <line x1="10" y1="165.5" x2="290" y2="165.5"/>
+    <line x1="10" y1="196.6" x2="290" y2="196.6"/>
+    <line x1="10" y1="227.7" x2="290" y2="227.7"/>
+    <line x1="10" y1="258.8" x2="290" y2="258.8"/>
+  </g>
+  
+  <!-- Brahma Sthana (Center - 3x3) -->
+  <rect x="103.3" y="103.3" width="93.3" height="93.3" fill="#fef3c7" stroke="#d4a418" stroke-width="2"/>
+  
+  <!-- Vasthu Purusha figure (simplified representation) -->
+  <g fill="url(#vpBlue)" opacity="0.6">
+    <!-- Head (NE direction) -->
+    <circle cx="227.7" cy="72.2" r="20"/>
+    <!-- Body (center) -->
+    <ellipse cx="150" cy="150" rx="40" ry="60"/>
+    <!-- Arms -->
+    <rect x="60" y="130" width="40" height="15" rx="5"/>
+    <rect x="200" y="130" width="40" height="15" rx="5"/>
+    <!-- Legs -->
+    <rect x="120" y="200" width="15" height="50" rx="5"/>
+    <rect x="165" y="200" width="15" height="50" rx="5"/>
+  </g>
+  
+  <!-- Direction Labels -->
+  <g font-family="Cinzel, serif" font-size="10" fill="#1e3a5f" text-anchor="middle">
+    <text x="150" y="25">NORTH (उत्तर)</text>
+    <text x="150" y="285">SOUTH (दक्षिण)</text>
+    <text x="25" y="155" transform="rotate(-90, 25, 155)">WEST (पश्चिम)</text>
+    <text x="275" y="155" transform="rotate(90, 275, 155)">EAST (पूर्व)</text>
+    <!-- Corner directions -->
+    <text x="50" y="35" font-size="8">NW</text>
+    <text x="250" y="35" font-size="8">NE</text>
+    <text x="50" y="280" font-size="8">SW</text>
+    <text x="250" y="280" font-size="8">SE</text>
+  </g>
+  
+  <!-- Ashtadikpalakas symbols in corners and edges -->
+  <g fill="url(#vpGold)">
+    <!-- Kubera (N) - Wealth -->
+    <circle cx="150" cy="25" r="8"/>
+    <!-- Yama (S) - Death/Dharma -->
+    <circle cx="150" cy="275" r="8"/>
+    <!-- Varuna (W) - Water -->
+    <circle cx="25" cy="150" r="8"/>
+    <!-- Indra (E) - King of Gods -->
+    <circle cx="275" cy="150" r="8"/>
+    <!-- Vayu (NW) - Wind -->
+    <circle cx="25" cy="25" r="6"/>
+    <!-- Ishana (NE) - Shiva -->
+    <circle cx="275" cy="25" r="6"/>
+    <!-- Nirrti (SW) - Dissolution -->
+    <circle cx="25" cy="275" r="6"/>
+    <!-- Agni (SE) - Fire -->
+    <circle cx="275" cy="275" r="6"/>
+  </g>
+</svg>
+

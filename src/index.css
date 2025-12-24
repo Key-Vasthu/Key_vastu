@@ -1,0 +1,252 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-body bg-cream-50 text-earth-800 antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-cream-100;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-earth-400 rounded-full;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-earth-500;
+  }
+  
+  /* Focus styles for accessibility */
+  *:focus-visible {
+    @apply outline-none ring-2 ring-gold-500 ring-offset-2 ring-offset-cream-50;
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Button variants */
+  .btn-primary {
+    @apply px-6 py-3 bg-gradient-to-r from-saffron-500 to-saffron-600 text-white font-medium rounded-lg
+           hover:from-saffron-600 hover:to-saffron-700 active:from-saffron-700 active:to-saffron-800
+           transition-all duration-300 shadow-md hover:shadow-saffron
+           focus-visible:ring-saffron-500 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-gradient-to-r from-astral-500 to-astral-600 text-white font-medium rounded-lg
+           hover:from-astral-600 hover:to-astral-700 active:from-astral-700 active:to-astral-800
+           transition-all duration-300 shadow-md hover:shadow-lg
+           focus-visible:ring-astral-400 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-gold {
+    @apply px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-white font-medium rounded-lg
+           hover:from-gold-600 hover:to-gold-700 active:from-gold-700 active:to-gold-800
+           transition-all duration-300 shadow-gold hover:shadow-lg
+           focus-visible:ring-gold-500 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-outline {
+    @apply px-6 py-3 border-2 border-gold-500 text-gold-600 font-medium rounded-lg
+           hover:bg-gold-50 active:bg-gold-100 transition-all duration-300
+           focus-visible:ring-gold-500 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-ghost {
+    @apply px-4 py-2 text-earth-600 hover:text-saffron-600 hover:bg-saffron-50
+           transition-all duration-300 rounded-lg;
+  }
+  
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-xl shadow-md border border-earth-100 overflow-hidden
+           transition-all duration-300 hover:shadow-lg;
+  }
+  
+  .card-gold {
+    @apply bg-white rounded-xl shadow-md border-2 border-gold-200 overflow-hidden
+           transition-all duration-300 hover:shadow-gold hover:border-gold-400;
+  }
+  
+  /* Input styles */
+  .input-field {
+    @apply w-full px-4 py-3 border-2 border-earth-200 rounded-lg
+           bg-white text-earth-800 placeholder-earth-400
+           focus:border-gold-500 focus:ring-0
+           transition-all duration-300;
+  }
+  
+  .input-label {
+    @apply block text-sm font-medium text-earth-700 mb-2;
+  }
+  
+  .input-error {
+    @apply text-sm text-red-600 mt-1;
+  }
+  
+  /* Section styles */
+  .section-title {
+    @apply text-2xl md:text-3xl font-display font-semibold text-astral-500 text-center;
+  }
+  
+  .section-subtitle {
+    @apply text-base text-earth-600 text-center max-w-2xl mx-auto;
+  }
+  
+  /* Decorative elements */
+  .divider-ornate {
+    @apply flex items-center justify-center gap-4 my-8;
+  }
+  
+  .divider-ornate::before,
+  .divider-ornate::after {
+    content: '';
+    @apply flex-1 h-px bg-gradient-to-r from-transparent via-gold-400 to-transparent;
+  }
+  
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+  
+  .badge-gold {
+    @apply badge bg-gold-100 text-gold-700;
+  }
+  
+  .badge-saffron {
+    @apply badge bg-saffron-100 text-saffron-700;
+  }
+  
+  .badge-astral {
+    @apply badge bg-astral-100 text-astral-500;
+  }
+  
+  .badge-success {
+    @apply badge bg-green-100 text-green-700;
+  }
+  
+  .badge-warning {
+    @apply badge bg-yellow-100 text-yellow-700;
+  }
+  
+  .badge-error {
+    @apply badge bg-red-100 text-red-700;
+  }
+}
+
+/* Utility styles */
+@layer utilities {
+  .text-gradient-gold {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-gold-500 via-gold-400 to-gold-600;
+  }
+  
+  .text-gradient-saffron {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-saffron-500 via-saffron-400 to-saffron-600;
+  }
+  
+  .bg-pattern-mandala {
+    background-image: url('/mandala-pattern.svg');
+    background-repeat: repeat;
+  }
+  
+  .border-ornate {
+    @apply border-2 border-gold-300;
+    border-image: linear-gradient(45deg, #d4a418, #fbbf24, #d4a418) 1;
+  }
+  
+  /* Glassmorphism */
+  .glass {
+    @apply bg-white/70 backdrop-blur-md border border-white/20;
+  }
+  
+  .glass-dark {
+    @apply bg-astral-900/80 backdrop-blur-md border border-astral-700/30;
+  }
+}
+
+/* Animation utilities */
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
+
+/* Marquee animations for elephant border */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 80s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 80s linear infinite;
+}
+
+/* Elephant walking animations */
+@keyframes walkLeftToRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(30px);
+  }
+}
+
+@keyframes walkRightToLeft {
+  from {
+    transform: translateX(0) scaleX(-1);
+  }
+  to {
+    transform: translateX(-30px) scaleX(-1);
+  }
+}
+
+.elephant-walk-ltr {
+  animation: walkLeftToRight 2s linear infinite alternate;
+}
+
+.elephant-walk-rtl {
+  animation: walkRightToLeft 2s linear infinite alternate;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+

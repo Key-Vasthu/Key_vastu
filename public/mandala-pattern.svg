@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" opacity="0.05">
+  <defs>
+    <pattern id="mandala" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse">
+      <g fill="none" stroke="#d4a418" stroke-width="0.5">
+        <!-- Central circle -->
+        <circle cx="100" cy="100" r="80"/>
+        <circle cx="100" cy="100" r="60"/>
+        <circle cx="100" cy="100" r="40"/>
+        <circle cx="100" cy="100" r="20"/>
+        
+        <!-- Radial lines -->
+        <g>
+          <line x1="100" y1="20" x2="100" y2="180"/>
+          <line x1="20" y1="100" x2="180" y2="100"/>
+          <line x1="43.43" y1="43.43" x2="156.57" y2="156.57"/>
+          <line x1="156.57" y1="43.43" x2="43.43" y2="156.57"/>
+        </g>
+        
+        <!-- Petal shapes -->
+        <g>
+          <path d="M100,20 Q130,50 100,80 Q70,50 100,20"/>
+          <path d="M100,120 Q130,150 100,180 Q70,150 100,120"/>
+          <path d="M20,100 Q50,130 80,100 Q50,70 20,100"/>
+          <path d="M120,100 Q150,130 180,100 Q150,70 120,100"/>
+        </g>
+        
+        <!-- Corner decorations -->
+        <circle cx="43.43" cy="43.43" r="10"/>
+        <circle cx="156.57" cy="43.43" r="10"/>
+        <circle cx="43.43" cy="156.57" r="10"/>
+        <circle cx="156.57" cy="156.57" r="10"/>
+      </g>
+    </pattern>
+  </defs>
+  <rect width="200" height="200" fill="url(#mandala)"/>
+</svg>
+
