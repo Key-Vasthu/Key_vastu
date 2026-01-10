@@ -4,7 +4,7 @@
  * Replace with actual API endpoints when backend is ready.
  */
 
-import type { ApiResponse, User, ChatThread, ChatMessage, Book, Order, DashboardStats, Activity, ManagedFile, FileCategory } from '../types';
+import type { ApiResponse, User, ChatThread, ChatMessage, Book, Order, DashboardStats, Activity, ManagedFile, FileCategory, CartItem, Address } from '../types';
 
 // Simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
