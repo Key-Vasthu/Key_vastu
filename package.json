@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "server": "node server/index.js",
     "server:dev": "node --watch server/index.js",
-    "view-chat": "node view-chat-data.js"
+    "view-chat": "node view-chat-data.js",
+    "vercel-build": "npm run build"
   },
   "dependencies": {
     "fabric": "^5.5.2",
