@@ -27,14 +27,14 @@ app.use(express.json());
   }
 })();
 
-// Routes - remove /api prefix since Vercel already handles it
-app.use('/chat', chatRoutes);
-app.use('/orders', ordersRoutes);
-app.use('/admin', adminRoutes);
-app.use('/blog', blogRoutes);
+// Routes - Vercel routes /api/* to this handler, so we need /api prefix
+app.use('/api/chat', chatRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/blog', blogRoutes);
 
 // Health check
-app.get('/health', async (req, res) => {
+app.get('/api/health', async (req, res) => {
   try {
     const { query } = await import('../server/db/connection.js');
     
@@ -69,4 +69,3 @@ app.get('/health', async (req, res) => {
 
 // Export for Vercel serverless
 export default app;
-
