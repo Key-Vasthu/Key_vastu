@@ -75,6 +75,13 @@ router.post('/', async (req, res) => {
     // Fetch complete order with items
     const completeOrder = await getOrderWithItems(orderId);
 
+    if (!completeOrder) {
+      return res.status(500).json({ 
+        success: false, 
+        error: 'Order was created but could not be retrieved' 
+      });
+    }
+
     res.json({
       success: true,
       data: completeOrder,
@@ -112,7 +119,10 @@ router.get('/', async (req, res) => {
       })
     );
 
-    res.json({ success: true, data: orders });
+    // Filter out any null orders (shouldn't happen, but safety check)
+    const validOrders = orders.filter(order => order !== null);
+
+    res.json({ success: true, data: validOrders });
   } catch (error) {
     console.error('Error fetching orders:', error);
     res.status(500).json({ success: false, error: 'Failed to fetch orders' });
@@ -135,6 +145,11 @@ router.get('/:orderId', async (req, res) => {
     }
 
     const order = await getOrderWithItems(orderId);
+    
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+    
     res.json({ success: true, data: order });
   } catch (error) {
     console.error('Error fetching order:', error);
@@ -159,6 +174,11 @@ router.patch('/:orderId/status', async (req, res) => {
     `, [status, orderId]);
 
     const order = await getOrderWithItems(orderId);
+    
+    if (!order) {
+      return res.status(404).json({ success: false, error: 'Order not found' });
+    }
+    
     res.json({ success: true, data: order });
   } catch (error) {
     console.error('Error updating order status:', error);

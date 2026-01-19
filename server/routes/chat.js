@@ -169,7 +169,7 @@ router.get('/threads', async (req, res) => {
 
     const threads = result.rows.map(row => ({
       id: row.id,
-      participantName: row.participant_name || row.participant_name,
+      participantName: row.participant_name,
       participantAvatar: row.participant_avatar,
       lastMessage: row.last_message || '',
       lastMessageTime: formatRelativeTime(row.last_message_time),

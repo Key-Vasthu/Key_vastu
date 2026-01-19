@@ -20,6 +20,8 @@ async function createBlogTable() {
         content TEXT NOT NULL,
         excerpt TEXT,
         video_url TEXT,
+        featured_image_url TEXT,
+        estimated_read_time INTEGER,
         author_id VARCHAR(255) NOT NULL,
         author_name VARCHAR(255) NOT NULL,
         status VARCHAR(50) DEFAULT 'draft',

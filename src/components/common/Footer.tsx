@@ -35,7 +35,6 @@ const Footer: React.FC = () => {
     { label: 'Vasthu Guide', to: '/books' },
     { label: 'Astrology Basics', to: '/books' },
     { label: 'FAQ', to: '/about' },
-    { label: 'Blog', to: '/about' },
   ];
 
   const legalLinks = [

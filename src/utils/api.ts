@@ -4,7 +4,7 @@
  * Replace with actual API endpoints when backend is ready.
  */
 
-import type { ApiResponse, User, ChatThread, ChatMessage, Book, Order, DashboardStats, Activity, ManagedFile, FileCategory } from '../types';
+import type { ApiResponse, User, ChatThread, ChatMessage, Book, Order, DashboardStats, Activity, ManagedFile, FileCategory, CartItem, Address } from '../types';
 
 // Simulate network delay
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -14,6 +14,27 @@ const randomDelay = (min = 300, max = 1500) => delay(Math.random() * (max - min)
 
 // Simulate occasional errors (10% chance)
 const maybeError = () => Math.random() < 0.1;
+
+// Fetch with timeout helper
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = 10000): Promise<Response> => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+  
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('Request timeout - server may be unavailable');
+    }
+    throw error;
+  }
+};
 
 /**
  * Authentication API stubs
@@ -956,6 +977,8 @@ export interface BlogPost {
   content: string;
   excerpt?: string;
   video_url?: string;
+  featured_image_url?: string;
+  estimated_read_time?: number; // in minutes
   author_id: string;
   author_name: string;
   status: 'draft' | 'published';
@@ -968,130 +991,159 @@ export const blogApi = {
   // Get all published blog posts (public)
   async getPosts(): Promise<ApiResponse<BlogPost[]>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/blog`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetchWithTimeout(
+        `${API_BASE_URL}/blog`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      });
+        10000 // 10 second timeout
+      );
 
-      // Always try to parse JSON, even for error statuses
-      const contentType = response.headers.get('content-type');
-      let data: any;
-      
-      if (contentType && contentType.includes('application/json')) {
-        try {
-          data = await response.json();
-          // If backend returned success with data, return it even if status is not ok
-          if (data.success !== undefined) {
-            return data;
-          }
-        } catch (parseError) {
-          console.error('Failed to parse JSON response:', parseError);
-        }
+      if (!response.ok) {
+        throw new Error(`Server error (${response.status})`);
       }
 
-      // If we got here, response was not ok and not JSON, or JSON parsing failed
-      if (!response.ok) {
-        const text = await response.text();
-        console.error('Blog API error:', response.status, text.substring(0, 200));
-        
-        // Return empty array instead of throwing error
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned non-JSON response');
+      }
+
+      const data = await response.json();
+      
+      // Handle both response formats: { success, data } or just { data }
+      if (data.success !== undefined) {
         return {
-          success: true,
-          data: [],
-          error: `Server error (${response.status}). Please check if backend is running.`
+          success: data.success,
+          data: data.data || [],
+          error: data.error,
         };
       }
 
-      return data || { success: true, data: [] };
-    } catch (error) {
-      console.error('Error fetching blog posts:', error);
-      // Always return success with empty array to prevent frontend crashes
-      return { 
-        success: true, 
-        data: [],
-        error: error instanceof Error ? error.message : 'Failed to fetch blog posts'
-      };
+      // If response doesn't have success field, assume it's successful if we got data
+      return { success: true, data: Array.isArray(data) ? data : (data.data || []) };
+    } catch (fetchError) {
+      // Fallback to localStorage for local-only mode
+      console.log('⚠️ Backend unavailable, loading from localStorage (local-only mode)', fetchError);
+      try {
+        const stored = localStorage.getItem('keyvasthu_blog_posts');
+        const posts: BlogPost[] = stored ? JSON.parse(stored) : [];
+        // Only return published posts for public view
+        const publishedPosts = posts.filter(p => p.status === 'published');
+        return {
+          success: true,
+          data: publishedPosts,
+        };
+      } catch (localError) {
+        console.error('Error reading from localStorage:', localError);
+        return {
+          success: true,
+          data: [],
+        };
+      }
     }
   },
 
   // Get all blog posts (admin - includes drafts)
   async getAdminPosts(): Promise<ApiResponse<BlogPost[]>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/blog/admin`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetchWithTimeout(
+        `${API_BASE_URL}/blog/admin`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      });
+        10000 // 10 second timeout
+      );
 
-      // Always try to parse JSON, even for error statuses
-      const contentType = response.headers.get('content-type');
-      let data: any;
-      
-      if (contentType && contentType.includes('application/json')) {
-        try {
-          data = await response.json();
-          // If backend returned success with data, return it even if status is not ok
-          if (data.success !== undefined) {
-            return data;
-          }
-        } catch (parseError) {
-          console.error('Failed to parse JSON response:', parseError);
-        }
+      if (!response.ok) {
+        throw new Error(`Server error (${response.status})`);
       }
 
-      // If we got here, response was not ok and not JSON, or JSON parsing failed
-      if (!response.ok) {
-        const text = await response.text();
-        console.error('Blog Admin API error:', response.status, text.substring(0, 200));
-        
-        // Return empty array instead of throwing error
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server returned non-JSON response');
+      }
+
+      const data = await response.json();
+      
+      // Handle both response formats: { success, data } or just { data }
+      if (data.success !== undefined) {
         return {
-          success: true,
-          data: [],
-          error: `Server error (${response.status}). Please check if backend is running.`
+          success: data.success,
+          data: data.data || [],
+          error: data.error,
         };
       }
 
-      return data || { success: true, data: [] };
-    } catch (error) {
-      console.error('Error fetching admin blog posts:', error);
-      // Always return success with empty array to prevent frontend crashes
-      return { 
-        success: true, 
-        data: [],
-        error: error instanceof Error ? error.message : 'Failed to fetch blog posts'
-      };
+      // If response doesn't have success field, assume it's successful if we got data
+      return { success: true, data: Array.isArray(data) ? data : (data.data || []) };
+    } catch (fetchError) {
+      // Fallback to localStorage for local-only mode
+      console.log('⚠️ Backend unavailable, loading from localStorage (local-only mode)', fetchError);
+      try {
+        const stored = localStorage.getItem('keyvasthu_blog_posts');
+        const posts: BlogPost[] = stored ? JSON.parse(stored) : [];
+        // Return all posts for admin (including drafts)
+        return {
+          success: true,
+          data: posts,
+        };
+      } catch (localError) {
+        console.error('Error reading from localStorage:', localError);
+        return {
+          success: true,
+          data: [],
+        };
+      }
     }
   },
 
   // Get single blog post by ID
   async getPost(id: string): Promise<ApiResponse<BlogPost>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/blog/${id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      try {
+        const response = await fetch(`${API_BASE_URL}/blog/${id}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-      if (!response.ok) {
-        const text = await response.text();
-        console.error('Blog Get API error:', response.status, text);
-        throw new Error(`HTTP error! status: ${response.status}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Server returned non-JSON response.');
+        }
+
+        const data = await response.json();
+        return data;
+      } catch (fetchError) {
+        // Fallback to localStorage for local-only mode
+        console.log('⚠️ Backend unavailable, loading from localStorage (local-only mode)');
+        const stored = localStorage.getItem('keyvasthu_blog_posts');
+        const posts: BlogPost[] = stored ? JSON.parse(stored) : [];
+        const post = posts.find(p => p.id === id);
+        
+        if (!post) {
+          return {
+            success: false,
+            error: 'Blog post not found',
+          };
+        }
+
+        return {
+          success: true,
+          data: post,
+        };
       }
-
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await response.text();
-        console.error('Blog Get API returned non-JSON:', text.substring(0, 200));
-        throw new Error('Server returned non-JSON response.');
-      }
-
-      const data = await response.json();
-      return data;
     } catch (error) {
       console.error('Error fetching blog post:', error);
       return { 
@@ -1107,6 +1159,8 @@ export const blogApi = {
     content: string;
     excerpt?: string;
     video_url?: string;
+    featured_image_url?: string;
+    estimated_read_time?: number;
     author_id: string;
     author_name: string;
     status?: 'draft' | 'published';
@@ -1148,62 +1202,77 @@ export const blogApi = {
         };
       }
       
-      const response = await fetch(`${API_BASE_URL}/blog`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(post),
-      });
+      try {
+        const response = await fetch(`${API_BASE_URL}/blog`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(post),
+        });
 
-      console.log('Blog create response status:', response.status);
-      console.log('Blog create response ok:', response.ok);
+        console.log('Blog create response status:', response.status);
+        console.log('Blog create response ok:', response.ok);
 
-      // Always try to parse as JSON first
-      let data: any;
-      const contentType = response.headers.get('content-type');
-      
-      if (contentType && contentType.includes('application/json')) {
-        try {
-          data = await response.json();
-          console.log('Blog create response data:', data);
-        } catch (parseError) {
-          console.error('Failed to parse JSON response:', parseError);
-          const text = await response.text();
-          console.error('Response text:', text.substring(0, 200));
-          return {
-            success: false,
-            error: `Server returned invalid JSON. Status: ${response.status}`
-          };
+        // Always try to parse as JSON first
+        let data: any;
+        const contentType = response.headers.get('content-type');
+        
+        if (contentType && contentType.includes('application/json')) {
+          try {
+            data = await response.json();
+            console.log('Blog create response data:', data);
+          } catch (parseError) {
+            console.error('Failed to parse JSON response:', parseError);
+            throw new Error('Failed to parse server response');
+          }
+        } else {
+          throw new Error('Server returned non-JSON response');
         }
-      } else {
-        const text = await response.text();
-        console.error('Blog Create API returned non-JSON:', text.substring(0, 200));
-        return {
-          success: false,
-          error: `Server returned non-JSON response (${response.status}). Make sure the backend server is running on port 3001.`
-        };
-      }
 
-      // Check if response was successful
-      if (!response.ok) {
-        const errorMessage = data?.error || `Server error (${response.status})`;
-        console.error('Blog create failed:', errorMessage);
-        return {
-          success: false,
-          error: errorMessage
-        };
-      }
+        // Check if response was successful
+        if (!response.ok) {
+          throw new Error(data?.error || `Server error (${response.status})`);
+        }
 
-      // Validate response structure
-      if (data.success && data.data) {
-        console.log('✅ Blog post created successfully:', data.data.id);
-        return data;
-      } else {
-        console.error('Invalid response structure:', data);
+        // Validate response structure
+        if (data.success && data.data) {
+          console.log('✅ Blog post created successfully:', data.data.id);
+          return data;
+        } else {
+          throw new Error(data?.error || 'Server returned invalid response structure');
+        }
+      } catch (fetchError) {
+        // Fallback to localStorage for local-only mode
+        console.log('⚠️ Backend unavailable, saving to localStorage (local-only mode)');
+        
+        const now = new Date().toISOString();
+        const newPost: BlogPost = {
+          id: `local-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          title: post.title.trim(),
+          content: post.content.trim(),
+          excerpt: post.excerpt?.trim() || undefined,
+          video_url: post.video_url?.trim() || undefined,
+          featured_image_url: post.featured_image_url?.trim() || undefined,
+          estimated_read_time: post.estimated_read_time || undefined,
+          author_id: post.author_id,
+          author_name: post.author_name.trim(),
+          status: post.status || 'draft',
+          published_at: post.status === 'published' ? now : undefined,
+          created_at: now,
+          updated_at: now,
+        };
+
+        // Save to localStorage
+        const stored = localStorage.getItem('keyvasthu_blog_posts');
+        const posts: BlogPost[] = stored ? JSON.parse(stored) : [];
+        posts.push(newPost);
+        localStorage.setItem('keyvasthu_blog_posts', JSON.stringify(posts));
+
+        console.log('✅ Blog post saved to localStorage:', newPost.id);
         return {
-          success: false,
-          error: data?.error || 'Server returned invalid response structure'
+          success: true,
+          data: newPost,
         };
       }
     } catch (error) {
@@ -1230,43 +1299,59 @@ export const blogApi = {
     }
   ): Promise<ApiResponse<BlogPost>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/blog/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
-      });
+      try {
+        const response = await fetch(`${API_BASE_URL}/blog/${id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(updates),
+        });
 
-      if (!response.ok) {
-        const contentType = response.headers.get('content-type');
-        let errorMessage = 'Failed to update blog post';
-        
-        if (contentType && contentType.includes('application/json')) {
-          try {
-            const errorData = await response.json();
-            errorMessage = errorData.error || errorMessage;
-          } catch {
-            // If JSON parsing fails, use default message
-          }
-        } else {
-          const text = await response.text();
-          console.error('Blog Update API returned non-JSON:', text.substring(0, 200));
-          errorMessage = 'Server returned non-JSON response. Make sure the backend server is running on port 3001.';
+        if (!response.ok) {
+          throw new Error('Failed to update blog post');
         }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Server returned non-JSON response');
+        }
+
+        const data = await response.json();
+        return data;
+      } catch (fetchError) {
+        // Fallback to localStorage for local-only mode
+        console.log('⚠️ Backend unavailable, updating in localStorage (local-only mode)');
+        const stored = localStorage.getItem('keyvasthu_blog_posts');
+        const posts: BlogPost[] = stored ? JSON.parse(stored) : [];
+        const postIndex = posts.findIndex(p => p.id === id);
         
-        throw new Error(errorMessage);
-      }
+        if (postIndex === -1) {
+          return {
+            success: false,
+            error: 'Blog post not found',
+          };
+        }
 
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await response.text();
-        console.error('Blog Update API returned non-JSON:', text.substring(0, 200));
-        throw new Error('Server returned non-JSON response. Make sure the backend server is running.');
-      }
+        const now = new Date().toISOString();
+        const updatedPost: BlogPost = {
+          ...posts[postIndex],
+          ...updates,
+          updated_at: now,
+          published_at: updates.status === 'published' && !posts[postIndex].published_at 
+            ? now 
+            : posts[postIndex].published_at,
+        };
 
-      const data = await response.json();
-      return data;
+        posts[postIndex] = updatedPost;
+        localStorage.setItem('keyvasthu_blog_posts', JSON.stringify(posts));
+
+        console.log('✅ Blog post updated in localStorage:', id);
+        return {
+          success: true,
+          data: updatedPost,
+        };
+      }
     } catch (error) {
       console.error('Error updating blog post:', error);
       return {
@@ -1279,42 +1364,47 @@ export const blogApi = {
   // Delete blog post (admin only)
   async deletePost(id: string): Promise<ApiResponse<void>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/blog/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      try {
+        const response = await fetch(`${API_BASE_URL}/blog/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
-      if (!response.ok) {
-        const contentType = response.headers.get('content-type');
-        let errorMessage = 'Failed to delete blog post';
-        
-        if (contentType && contentType.includes('application/json')) {
-          try {
-            const errorData = await response.json();
-            errorMessage = errorData.error || errorMessage;
-          } catch {
-            // If JSON parsing fails, use default message
-          }
-        } else {
-          const text = await response.text();
-          console.error('Blog Delete API returned non-JSON:', text.substring(0, 200));
-          errorMessage = 'Server returned non-JSON response. Make sure the backend server is running on port 3001.';
+        if (!response.ok) {
+          throw new Error('Failed to delete blog post');
         }
+
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('Server returned non-JSON response');
+        }
+
+        const data = await response.json();
+        return data;
+      } catch (fetchError) {
+        // Fallback to localStorage for local-only mode
+        console.log('⚠️ Backend unavailable, deleting from localStorage (local-only mode)');
+        const stored = localStorage.getItem('keyvasthu_blog_posts');
+        const posts: BlogPost[] = stored ? JSON.parse(stored) : [];
+        const postIndex = posts.findIndex(p => p.id === id);
         
-        throw new Error(errorMessage);
-      }
+        if (postIndex === -1) {
+          return {
+            success: false,
+            error: 'Blog post not found',
+          };
+        }
 
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const text = await response.text();
-        console.error('Blog Delete API returned non-JSON:', text.substring(0, 200));
-        throw new Error('Server returned non-JSON response. Make sure the backend server is running.');
-      }
+        posts.splice(postIndex, 1);
+        localStorage.setItem('keyvasthu_blog_posts', JSON.stringify(posts));
 
-      const data = await response.json();
-      return data;
+        console.log('✅ Blog post deleted from localStorage:', id);
+        return {
+          success: true,
+        };
+      }
     } catch (error) {
       console.error('Error deleting blog post:', error);
       return {

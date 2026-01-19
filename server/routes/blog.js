@@ -209,7 +209,7 @@ router.get('/:id', async (req, res) => {
 // Create new blog post (admin only)
 router.post('/', async (req, res) => {
   try {
-    const { title, content, excerpt, video_url, author_id, author_name, status } = req.body;
+    const { title, content, excerpt, video_url, featured_image_url, estimated_read_time, author_id, author_name, status } = req.body;
 
     console.log('=== Creating blog post ===');
     console.log('Request body:', { 
@@ -295,16 +295,18 @@ router.post('/', async (req, res) => {
       
       insertResult = await query(`
         INSERT INTO blog_posts (
-          id, title, content, excerpt, video_url, author_id, author_name, status, published_at
+          id, title, content, excerpt, video_url, featured_image_url, estimated_read_time, author_id, author_name, status, published_at
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
         RETURNING *
       `, [
         id, 
         title.trim(), 
         content.trim(), 
         excerpt && excerpt.trim() ? excerpt.trim() : null, 
-        video_url && video_url.trim() ? video_url.trim() : null, 
+        video_url && video_url.trim() ? video_url.trim() : null,
+        featured_image_url && featured_image_url.trim() ? featured_image_url.trim() : null,
+        estimated_read_time ? parseInt(estimated_read_time) : null,
         author_id, 
         author_name.trim(), 
         postStatus, 
@@ -387,7 +389,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, content, excerpt, video_url, status } = req.body;
+    const { title, content, excerpt, video_url, featured_image_url, estimated_read_time, status } = req.body;
 
     console.log('Updating blog post:', { id, title, status });
 
@@ -428,16 +430,20 @@ router.put('/:id', async (req, res) => {
         content = $2,
         excerpt = $3,
         video_url = $4,
-        status = $5,
-        published_at = $6,
+        featured_image_url = $5,
+        estimated_read_time = $6,
+        status = $7,
+        published_at = $8,
         updated_at = CURRENT_TIMESTAMP
-      WHERE id = $7
+      WHERE id = $9
       RETURNING *
     `, [
       title.trim(), 
       content.trim(), 
       excerpt ? excerpt.trim() : null, 
-      video_url ? video_url.trim() : null, 
+      video_url ? video_url.trim() : null,
+      featured_image_url ? featured_image_url.trim() : null,
+      estimated_read_time ? parseInt(estimated_read_time) : null,
       postStatus, 
       published_at, 
       id

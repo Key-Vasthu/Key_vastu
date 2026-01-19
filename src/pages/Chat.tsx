@@ -654,13 +654,6 @@ const Chat: React.FC = () => {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Update message status after sending
-  const updateMessageStatus = async (messageId: string, newStatus: 'sent' | 'delivered' | 'read') => {
-    setMessages(prev => prev.map(msg => 
-      msg.id === messageId ? { ...msg, status: newStatus } : msg
-    ));
-  };
-
   const getStatusIcon = (status: ChatMessage['status']) => {
     switch (status) {
       case 'sent': 
