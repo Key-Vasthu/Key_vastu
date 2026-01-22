@@ -12,6 +12,7 @@
     "server": "node server/index.js",
     "server:dev": "node --watch server/index.js",
     "view-chat": "node view-chat-data.js",
+    "upload-r2-images": "node upload-images-to-r2.js",
     "vercel-build": "npm run build",
     "preinstall": "npm config set audit false && npm config set fund false"
   },
