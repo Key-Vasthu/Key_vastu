@@ -176,7 +176,7 @@ const Header: React.FC = () => {
         <div className="flex items-center justify-between h-20">
           {/* Logo - Fixed on left */}
           <div className="flex-shrink-0 flex items-start -ml-4 sm:-ml-6 lg:-ml">
-            <Logo />
+          <Logo />
           </div>
 
           {/* Desktop Navigation - Center */}

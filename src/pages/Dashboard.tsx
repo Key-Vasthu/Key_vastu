@@ -440,7 +440,7 @@ const ExistingHouseDashboard: React.FC<ExistingHouseDashboardProps> = ({ data })
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid sm:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link to="/files">
           <Card hoverable className="text-center py-6 group border-2 border-transparent hover:border-saffron-300">
             <div className="w-14 h-14 bg-saffron-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
@@ -466,6 +466,15 @@ const ExistingHouseDashboard: React.FC<ExistingHouseDashboardProps> = ({ data })
             </div>
             <h3 className="font-semibold text-earth-800 mb-1">Drawing Board</h3>
             <p className="text-sm text-earth-500">Annotate & mark plans</p>
+          </Card>
+        </Link>
+        <Link to="/blog">
+          <Card hoverable className="text-center py-6 group border-2 border-transparent hover:border-purple-300">
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+              <FileText className="w-7 h-7 text-purple-600" />
+            </div>
+            <h3 className="font-semibold text-earth-800 mb-1">Blog</h3>
+            <p className="text-sm text-earth-500">Latest news & updates</p>
           </Card>
         </Link>
       </div>
@@ -572,7 +581,7 @@ const PlanToBuyDashboard: React.FC<PlanToBuyDashboardProps> = ({ data }) => {
       </Card>
 
       {/* Quick Actions */}
-      <div className="grid sm:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Link to="/chat">
           <Card hoverable className="text-center py-6 group border-2 border-transparent hover:border-astral-300">
             <div className="w-14 h-14 bg-astral-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
@@ -598,6 +607,15 @@ const PlanToBuyDashboard: React.FC<PlanToBuyDashboardProps> = ({ data }) => {
             </div>
             <h3 className="font-semibold text-earth-800 mb-1">Annotate Plan</h3>
             <p className="text-sm text-earth-500">Mark & highlight areas</p>
+          </Card>
+        </Link>
+        <Link to="/blog">
+          <Card hoverable className="text-center py-6 group border-2 border-transparent hover:border-purple-300">
+            <div className="w-14 h-14 bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+              <FileText className="w-7 h-7 text-purple-600" />
+            </div>
+            <h3 className="font-semibold text-earth-800 mb-1">Blog</h3>
+            <p className="text-sm text-earth-500">Latest news & updates</p>
           </Card>
         </Link>
       </div>

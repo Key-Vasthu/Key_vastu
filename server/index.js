@@ -5,6 +5,7 @@ import { chatRoutes } from './routes/chat.js';
 import { ordersRoutes } from './routes/orders.js';
 import { adminRoutes } from './routes/admin.js';
 import { blogRoutes } from './routes/blog.js';
+import { fileRoutes } from './routes/files.js';
 import { initDatabase } from './db/init.js';
 
 dotenv.config();
@@ -33,6 +34,7 @@ app.use('/api/chat', chatRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/files', fileRoutes);
 
 // Health check
 app.get('/api/health', async (req, res) => {
@@ -71,5 +73,6 @@ app.get('/api/health', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📊 Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
+  console.log(`☁️  R2 Storage: ${process.env.R2_BUCKET_NAME ? 'Configured' : 'Not configured'}`);
 });
 

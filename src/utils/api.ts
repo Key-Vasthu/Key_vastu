@@ -578,35 +578,48 @@ export const fileManagementApi = {
     metadata: { tags?: string[]; category?: string },
     onProgress?: (progress: number) => void
   ): Promise<ApiResponse<ManagedFile>> {
-    // Simulate upload progress
-    for (let i = 0; i <= 100; i += 10) {
-      await delay(200);
-      onProgress?.(i);
-    }
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      if (metadata.category) {
+        formData.append('category', metadata.category);
+      }
+      if (metadata.tags && metadata.tags.length > 0) {
+        formData.append('tags', metadata.tags.join(','));
+      }
 
-    // Determine file type
-    let fileType: ManagedFile['type'] = 'other';
-    if (file.type.startsWith('image/')) fileType = 'image';
-    else if (file.type === 'application/pdf' || file.name.endsWith('.pdf')) fileType = 'document';
-    else if (file.name.endsWith('.dwg') || file.name.endsWith('.dxf')) fileType = 'drawing';
+      const xhr = new XMLHttpRequest();
 
-    // Create thumbnail for images
-    let thumbnailUrl: string | undefined;
-    if (fileType === 'image') {
-      thumbnailUrl = URL.createObjectURL(file);
-    }
+      // Track upload progress
+      xhr.upload.addEventListener('progress', (e) => {
+        if (e.lengthComputable) {
+          const percentComplete = (e.loaded / e.total) * 100;
+          onProgress?.(percentComplete);
+        }
+      });
 
+      const uploadPromise = new Promise<ManagedFile>(async (resolve, reject) => {
+        xhr.addEventListener('load', async () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const response = JSON.parse(xhr.responseText);
+              if (response.success && response.data) {
     // Get image dimensions if it's an image
     let imageMetadata: { width?: number; height?: number } = {};
-    if (fileType === 'image') {
+                let thumbnailUrl: string | undefined;
+                
+                if (response.data.type === 'image' && response.data.url) {
+                  thumbnailUrl = response.data.url;
       try {
         const img = new Image();
-        img.src = URL.createObjectURL(file);
-        await new Promise((resolve) => {
+                    img.crossOrigin = 'anonymous';
+                    img.src = response.data.url;
+                    await new Promise<void>((imgResolve) => {
           img.onload = () => {
             imageMetadata = { width: img.width, height: img.height };
-            resolve(null);
+                        imgResolve();
           };
+                      img.onerror = () => imgResolve();
         });
       } catch (e) {
         // Ignore errors
@@ -614,28 +627,55 @@ export const fileManagementApi = {
     }
 
     const managedFile: ManagedFile = {
-      id: 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9),
-      name: file.name,
-      type: fileType,
-      mimeType: file.type,
-      size: file.size,
-      url: URL.createObjectURL(file),
+                  ...response.data,
       thumbnailUrl,
-      uploadedAt: new Date().toISOString(),
-      uploadedBy: 'current-user', // In production, get from auth context
-      tags: metadata.tags || [],
-      category: metadata.category,
-      metadata: Object.keys(imageMetadata).length > 0 ? imageMetadata : undefined,
-      shareable: false,
-    };
+                  metadata: Object.keys(imageMetadata).length > 0 ? imageMetadata : response.data.metadata,
+                };
+                resolve(managedFile);
+              } else {
+                reject(new Error(response.error || 'Upload failed'));
+              }
+            } catch (e) {
+              reject(new Error('Failed to parse server response'));
+            }
+          } else {
+            try {
+              const error = JSON.parse(xhr.responseText);
+              reject(new Error(error.error || `Upload failed with status ${xhr.status}`));
+            } catch {
+              reject(new Error(`Upload failed with status ${xhr.status}`));
+            }
+          }
+        });
 
-    // Save to localStorage
+        xhr.addEventListener('error', () => {
+          reject(new Error('Network error during upload'));
+        });
+
+        xhr.addEventListener('abort', () => {
+          reject(new Error('Upload was aborted'));
+        });
+      });
+
+      xhr.open('POST', `${API_BASE_URL}/files/upload`);
+      xhr.send(formData);
+
+      const managedFile = await uploadPromise;
+
+      // Also save to localStorage for offline access
     const stored = localStorage.getItem('keyvasthu_files');
     const files: ManagedFile[] = stored ? JSON.parse(stored) : [];
     files.push(managedFile);
     localStorage.setItem('keyvasthu_files', JSON.stringify(files));
 
     return { success: true, data: managedFile };
+    } catch (error) {
+      console.error('Error uploading file:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to upload file',
+      };
+    }
   },
 
   // Update file metadata
