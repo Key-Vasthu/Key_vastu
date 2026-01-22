@@ -10,6 +10,7 @@ import {
   Phone,
   MapPin,
 } from 'lucide-react';
+import { getR2AssetUrl } from '../../utils/r2';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -65,7 +66,7 @@ const Footer: React.FC = () => {
             <Link to="/" onClick={handleLogoClick} className="flex items-center gap-3 mb-4">
               <div className="w-20 h-20">
                 <img
-                  src="/logoo.png"
+                  src={getR2AssetUrl('logoo.png')}
                   alt="KeyVasthu logo"
                   className="w-full h-full object-contain"
                   loading="lazy"

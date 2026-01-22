@@ -17,6 +17,7 @@ import {
 import { Button, Card, Badge, Avatar } from '../components/common';
 import { VasthuPurushaGrid, ZodiacWheel } from '../components/vasthu';
 import { useAuth } from '../contexts/AuthContext';
+import { getR2AssetUrl } from '../utils/r2';
 
 // Animation variants
 const fadeInUp = {
@@ -57,7 +58,7 @@ const ElephantBorder: React.FC<{ position: 'top' | 'bottom' }> = ({ position }) 
             }}
           >
             <img 
-              src="/elephant.png" 
+              src={getR2AssetUrl('elephant.png')} 
               alt="" 
               className="h-full w-auto object-contain opacity-80 flex-shrink-0"
               style={{ 
@@ -97,7 +98,7 @@ const HeroSection: React.FC = () => {
         }}
       >
         <img 
-          src="/vasthu-plan.png" 
+          src={getR2AssetUrl('vasthu-plan.png')} 
           alt="" 
           className="w-full h-full object-contain"
         />

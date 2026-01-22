@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { useNotification } from '../contexts/NotificationContext';
 import { cn } from '../utils/helpers';
+import { getR2AssetUrl } from '../utils/r2';
 
 // Types
 type Tool = 'select' | 'line' | 'rectangle' | 'circle' | 'brush' | 'text' | 'eraser' | 'measure';
@@ -2016,7 +2017,7 @@ const DrawingBoard: React.FC = () => {
               style={{ opacity: 0.08 }}
             >
               <img
-                src="/vasthu-plan.png"
+                src={getR2AssetUrl('vasthu-plan.png')}
                 alt="Vasthu Compass"
                 className="object-contain"
                 style={{

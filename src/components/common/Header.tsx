@@ -20,6 +20,7 @@ import {
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
 import { cn } from '../../utils/helpers';
+import { getR2AssetUrl } from '../../utils/r2';
 
 const Logo: React.FC = () => {
   const location = useLocation();
@@ -37,7 +38,7 @@ const Logo: React.FC = () => {
     <Link to="/" onClick={handleLogoClick} className="flex items-center gap-3 group flex-shrink-0">
       <div className="relative w-16 h-16 flex-shrink-0">
         <img
-          src="/logoo.png"
+          src={getR2AssetUrl('logoo.png')}
           alt="KeyVasthu logo"
           className="w-full h-full object-contain"
           loading="lazy"
