@@ -15,6 +15,7 @@ import {
   ChevronDown,
   Info,
   FileText,
+  Settings,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
@@ -274,7 +275,7 @@ const Header: React.FC = () => {
                             }}
                             className="flex items-center gap-3 px-3 py-2 text-earth-600 hover:bg-saffron-50 hover:text-saffron-600 rounded-lg transition-all"
                           >
-                            <LayoutDashboard size={18} />
+                            <Settings size={18} />
                             Admin Panel
                           </Link>
                         )}
