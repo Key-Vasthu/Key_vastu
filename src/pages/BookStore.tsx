@@ -125,6 +125,166 @@ const BookStore: React.FC = () => {
     addNotification('success', 'Added to Cart', `"${book.title}" added to your cart.`);
   };
 
+  // Admin book management functions
+  const handleOpenBookModal = (book?: Book) => {
+    if (book) {
+      setSelectedBook(book);
+      setBookForm({
+        title: book.title,
+        author: book.author,
+        description: book.description || '',
+        price: book.price.toString(),
+        originalPrice: book.originalPrice?.toString() || '',
+        coverImage: book.coverImage,
+        category: book.category,
+        pages: book.pages?.toString() || '',
+        language: book.language,
+        isbn: book.isbn || '',
+        publishedDate: book.publishedDate || '',
+        rating: book.rating?.toString() || '0',
+        reviewCount: book.reviewCount?.toString() || '0',
+        inStock: book.inStock,
+      });
+      setCoverImagePreview(book.coverImage);
+    } else {
+      setSelectedBook(null);
+      setBookForm({
+        title: '',
+        author: '',
+        description: '',
+        price: '',
+        originalPrice: '',
+        coverImage: '',
+        category: 'Vasthu Shastra',
+        pages: '',
+        language: 'English',
+        isbn: '',
+        publishedDate: '',
+        rating: '0',
+        reviewCount: '0',
+        inStock: true,
+      });
+      setCoverImagePreview('');
+      setCoverImageFile(null);
+    }
+    setIsBookModalOpen(true);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        addNotification('error', 'File Too Large', 'Image must be less than 5MB');
+        return;
+      }
+      setCoverImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUploadImage = async (): Promise<string> => {
+    if (!coverImageFile) return bookForm.coverImage;
+
+    try {
+      const formData = new FormData();
+      formData.append('file', coverImageFile);
+      formData.append('folder', 'books');
+
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/files/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (data.success && data.data?.url) {
+        return data.data.url;
+      }
+      throw new Error(data.error || 'Upload failed');
+    } catch (error) {
+      console.error('Image upload error:', error);
+      addNotification('error', 'Upload Failed', 'Failed to upload book cover image. Using URL instead.');
+      return bookForm.coverImage;
+    }
+  };
+
+  const handleSaveBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!bookForm.title || !bookForm.author || !bookForm.price) {
+      addNotification('error', 'Validation Error', 'Please fill in all required fields (Title, Author, Price)');
+      return;
+    }
+
+    try {
+      let coverImageUrl = bookForm.coverImage;
+      
+      if (coverImageFile) {
+        coverImageUrl = await handleUploadImage();
+      }
+
+      const bookData = {
+        title: bookForm.title,
+        author: bookForm.author,
+        description: bookForm.description,
+        price: parseFloat(bookForm.price),
+        originalPrice: bookForm.originalPrice ? parseFloat(bookForm.originalPrice) : undefined,
+        coverImage: coverImageUrl,
+        category: bookForm.category,
+        pages: bookForm.pages ? parseInt(bookForm.pages) : undefined,
+        language: bookForm.language,
+        isbn: bookForm.isbn,
+        publishedDate: bookForm.publishedDate || undefined,
+        rating: bookForm.rating ? parseFloat(bookForm.rating) : 0,
+        reviewCount: bookForm.reviewCount ? parseInt(bookForm.reviewCount) : 0,
+        inStock: bookForm.inStock,
+      };
+
+      let response;
+      if (selectedBook) {
+        response = await booksApi.updateBook(selectedBook.id, bookData);
+      } else {
+        response = await booksApi.createBook(bookData);
+      }
+
+      if (response.success) {
+        addNotification('success', 'Success', selectedBook ? 'Book updated successfully' : 'Book created successfully');
+        setIsBookModalOpen(false);
+        await loadBooks(); // Reload books to show updates
+      } else {
+        addNotification('error', 'Error', response.error || 'Failed to save book');
+      }
+    } catch (error) {
+      console.error('Error saving book:', error);
+      addNotification('error', 'Error', 'Failed to save book');
+    }
+  };
+
+  const handleDeleteBook = async () => {
+    if (!selectedBook) return;
+
+    setIsDeletingBook(true);
+    try {
+      const response = await booksApi.deleteBook(selectedBook.id);
+      if (response.success) {
+        await loadBooks(); // Reload books
+        addNotification('success', 'Book Deleted', `${selectedBook.title} has been removed.`);
+        setIsBookModalOpen(false);
+        setSelectedBook(null);
+      } else {
+        addNotification('error', 'Error', response.error || 'Failed to delete book');
+      }
+    } catch (error) {
+      console.error('Error deleting book:', error);
+      addNotification('error', 'Error', 'Failed to delete book');
+    }
+    setIsDeletingBook(false);
+  };
+
   if (isLoading) {
     return <Loading fullScreen text="Loading books..." />;
   }
