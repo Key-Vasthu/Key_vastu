@@ -134,15 +134,15 @@ const AdminDashboard: React.FC = () => {
       try {
         const [statsRes, usersRes, ordersRes, threadsRes, membersRes, booksRes] = await Promise.all([
           adminApi.getStats(),
-          adminApi.getUsers(),
+        adminApi.getUsers(),
           adminApi.getOrders(),
           adminApi.getChatThreads(),
           adminApi.getMembersWithOrders(),
           booksApi.getBooks(),
-        ]);
+      ]);
       
-        if (statsRes.success && statsRes.data) setStats(statsRes.data);
-        if (usersRes.success && usersRes.data) setUsers(usersRes.data);
+      if (statsRes.success && statsRes.data) setStats(statsRes.data);
+      if (usersRes.success && usersRes.data) setUsers(usersRes.data);
         if (ordersRes.success && ordersRes.data) setOrders(ordersRes.data);
         if (threadsRes.success && threadsRes.data) setChatThreads(threadsRes.data);
         if (membersRes.success && membersRes.data) setMembersWithOrders(membersRes.data);
@@ -805,11 +805,11 @@ const AdminDashboard: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-        >
-          <Card>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-              <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
-                <Users className="text-saffron-500" />
+          >
+            <Card>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
+                  <Users className="text-saffron-500" />
                 User Management ({users.length})
                 </h2>
                 <div className="flex gap-2">
@@ -904,7 +904,7 @@ const AdminDashboard: React.FC = () => {
                 <div>
                   <p className="text-sm text-earth-500 mb-1">Order ID</p>
                   <p className="font-mono text-earth-800">#{selectedOrder.id.split('-')[1]}</p>
-                </div>
+                    </div>
                 <div>
                   <p className="text-sm text-earth-500 mb-1">Status</p>
                   <Badge
@@ -916,7 +916,7 @@ const AdminDashboard: React.FC = () => {
                   >
                     {selectedOrder.status.charAt(0).toUpperCase() + selectedOrder.status.slice(1)}
                   </Badge>
-                </div>
+                    </div>
                 <div>
                   <p className="text-sm text-earth-500 mb-1">Order Date</p>
                   <p className="text-earth-800">{formatDate(selectedOrder.orderDate, 'long')}</p>
@@ -925,7 +925,7 @@ const AdminDashboard: React.FC = () => {
                   <p className="text-sm text-earth-500 mb-1">Total Amount</p>
                   <p className="text-xl font-bold text-saffron-600">{formatCurrency(selectedOrder.totalAmount)}</p>
                   </div>
-        </div>
+              </div>
 
               <div>
                 <p className="text-sm font-semibold text-earth-700 mb-3">Items</p>
@@ -935,12 +935,12 @@ const AdminDashboard: React.FC = () => {
                       <div>
                         <p className="font-medium text-earth-800">{item.book.title}</p>
                         <p className="text-sm text-earth-500">Quantity: {item.quantity}</p>
-                    </div>
+              </div>
                       <p className="font-semibold text-earth-700">{formatCurrency(item.book.price * item.quantity)}</p>
-                  </div>
+                      </div>
                 ))}
-              </div>
-              </div>
+                    </div>
+                  </div>
 
               <div>
                 <p className="text-sm font-semibold text-earth-700 mb-3 flex items-center gap-2">
@@ -960,8 +960,8 @@ const AdminDashboard: React.FC = () => {
                     <Phone size={14} />
                     {selectedOrder.shippingAddress.phone}
                   </p>
-                  </div>
               </div>
+        </div>
         </div>
           )}
         </Modal>
@@ -1135,6 +1135,217 @@ const AdminDashboard: React.FC = () => {
               </div>
             </div>
           )}
+        </Modal>
+
+        {/* Book Management Modal */}
+        <Modal
+          isOpen={isBookModalOpen}
+          onClose={() => {
+            setIsBookModalOpen(false);
+            setSelectedBook(null);
+            setCoverImageFile(null);
+            setCoverImagePreview('');
+          }}
+          title={selectedBook ? 'Edit Book' : 'Add New Book'}
+          size="lg"
+        >
+          <form onSubmit={handleSaveBook} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-earth-700 mb-1">Title *</label>
+                <Input
+                  value={bookForm.title}
+                  onChange={(e) => setBookForm({ ...bookForm, title: e.target.value })}
+                  placeholder="Book title"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-earth-700 mb-1">Author *</label>
+                <Input
+                  value={bookForm.author}
+                  onChange={(e) => setBookForm({ ...bookForm, author: e.target.value })}
+                  placeholder="Author name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-earth-700 mb-1">Description</label>
+              <textarea
+                value={bookForm.description}
+                onChange={(e) => setBookForm({ ...bookForm, description: e.target.value })}
+                placeholder="Book description"
+                rows={3}
+                className="w-full px-4 py-2 border border-earth-200 rounded-lg focus:border-saffron-500 focus:ring-0 focus:outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-earth-700 mb-1">Price (₹) *</label>
+                <Input
+                  type="number"
+                  value={bookForm.price}
+                  onChange={(e) => setBookForm({ ...bookForm, price: e.target.value })}
+                  placeholder="599"
+                  required
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-earth-700 mb-1">Original Price (₹)</label>
+                <Input
+                  type="number"
+                  value={bookForm.originalPrice}
+                  onChange={(e) => setBookForm({ ...bookForm, originalPrice: e.target.value })}
+                  placeholder="799"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-earth-700 mb-1">Category</label>
+                <select
+                  value={bookForm.category}
+                  onChange={(e) => setBookForm({ ...bookForm, category: e.target.value })}
+                  className="w-full px-4 py-2 border border-earth-200 rounded-lg focus:border-saffron-500 focus:ring-0 focus:outline-none"
+                >
+                  <option value="Vasthu Shastra">Vasthu Shastra</option>
+                  <option value="Astrology">Astrology</option>
+                  <option value="Architecture">Architecture</option>
+                  <option value="Remedial">Remedial</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-earth-700 mb-1">Pages</label>
+                <Input
+                  type="number"
+                  value={bookForm.pages}
+                  onChange={(e) => setBookForm({ ...bookForm, pages: e.target.value })}
+                  placeholder="320"
+                  min="0"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-earth-700 mb-1">Language</label>
+                <Input
+                  value={bookForm.language}
+                  onChange={(e) => setBookForm({ ...bookForm, language: e.target.value })}
+                  placeholder="English"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-earth-700 mb-1">ISBN</label>
+                <Input
+                  value={bookForm.isbn}
+                  onChange={(e) => setBookForm({ ...bookForm, isbn: e.target.value })}
+                  placeholder="978-1234567890"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-earth-700 mb-1">Published Date</label>
+              <Input
+                type="date"
+                value={bookForm.publishedDate}
+                onChange={(e) => setBookForm({ ...bookForm, publishedDate: e.target.value })}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-earth-700 mb-1">Cover Image</label>
+              <div className="space-y-2">
+                {coverImagePreview && (
+                  <div className="relative w-32 h-48 border border-earth-200 rounded-lg overflow-hidden">
+                    <img src={coverImagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCoverImagePreview('');
+                        setCoverImageFile(null);
+                      }}
+                      className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                    >
+                      <X size={14} />
+                    </button>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <label className="flex-1 cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                    <div className="px-4 py-2 border border-earth-200 rounded-lg hover:bg-earth-50 text-center text-sm text-earth-600">
+                      <Upload size={16} className="inline mr-2" />
+                      Upload Image
+                    </div>
+                  </label>
+                  <Input
+                    value={bookForm.coverImage}
+                    onChange={(e) => {
+                      setBookForm({ ...bookForm, coverImage: e.target.value });
+                      setCoverImagePreview(e.target.value);
+                    }}
+                    placeholder="Or enter image URL"
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="inStock"
+                checked={bookForm.inStock}
+                onChange={(e) => setBookForm({ ...bookForm, inStock: e.target.checked })}
+                className="w-4 h-4 text-saffron-500 border-earth-300 rounded focus:ring-saffron-500"
+              />
+              <label htmlFor="inStock" className="text-sm text-earth-700">In Stock</label>
+            </div>
+
+            <div className="flex gap-2 pt-4 border-t border-earth-200">
+              <Button
+                type="submit"
+                variant="primary"
+                className="flex-1"
+              >
+                {selectedBook ? 'Update Book' : 'Create Book'}
+              </Button>
+              {selectedBook && (
+                <Button
+                  type="button"
+                  variant="danger"
+                  onClick={handleDeleteBook}
+                  disabled={isDeletingBook}
+                >
+                  {isDeletingBook ? <Loading text="" /> : <Trash2 size={18} />}
+                </Button>
+              )}
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  setIsBookModalOpen(false);
+                  setSelectedBook(null);
+                  setCoverImageFile(null);
+                  setCoverImagePreview('');
+                }}
+              >
+                Cancel
+              </Button>
+            </div>
+          </form>
         </Modal>
       </div>
     </div>
