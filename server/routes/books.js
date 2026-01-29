@@ -86,6 +86,8 @@ router.post('/', async (req, res) => {
       language,
       isbn,
       publishedDate,
+      rating,
+      reviewCount,
     } = req.body;
 
     if (!title || !author || !price || !coverImage) {
@@ -97,9 +99,10 @@ router.post('/', async (req, res) => {
     await query(`
       INSERT INTO books (
         id, title, author, description, price, original_price,
-        cover_image, category, pages, language, isbn, published_date
+        cover_image, category, pages, language, isbn, published_date,
+        rating, review_count
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
     `, [
       bookId,
       title,
@@ -113,6 +116,8 @@ router.post('/', async (req, res) => {
       language || 'English',
       isbn || '',
       publishedDate || null,
+      rating ? parseFloat(rating) : 0,
+      reviewCount ? parseInt(reviewCount) : 0,
     ]);
 
     // Fetch the created book
@@ -160,6 +165,8 @@ router.put('/:id', async (req, res) => {
       isbn,
       publishedDate,
       inStock,
+      rating,
+      reviewCount,
     } = req.body;
 
     await query(`
@@ -177,8 +184,10 @@ router.put('/:id', async (req, res) => {
         isbn = COALESCE($10, isbn),
         published_date = $11,
         in_stock = COALESCE($12, in_stock),
+        rating = COALESCE($13, rating),
+        review_count = COALESCE($14, review_count),
         updated_at = CURRENT_TIMESTAMP
-      WHERE id = $13
+      WHERE id = $15
     `, [
       title,
       author,
@@ -192,6 +201,8 @@ router.put('/:id', async (req, res) => {
       isbn,
       publishedDate || null,
       inStock,
+      rating ? parseFloat(rating) : null,
+      reviewCount ? parseInt(reviewCount) : null,
       req.params.id,
     ]);
 
