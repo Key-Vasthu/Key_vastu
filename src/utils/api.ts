@@ -335,90 +335,68 @@ export const chatApi = {
  */
 export const booksApi = {
   async getBooks(): Promise<ApiResponse<Book[]>> {
-    await randomDelay();
-    
-    const books: Book[] = [
-      {
-        id: 'book-1',
-        title: 'Complete Guide to Vasthu Shastra',
-        author: 'Dr. Arun Sharma',
-        description: 'A comprehensive guide covering all aspects of Vasthu Shastra for modern homes and offices. Learn the ancient principles and apply them to contemporary architecture.',
-        price: 599,
-        originalPrice: 799,
-        coverImage: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400',
-        category: 'Vasthu Shastra',
-        rating: 4.8,
-        reviewCount: 256,
-        inStock: true,
-        pages: 320,
-        language: 'English',
-        isbn: '978-1234567890',
-        publishedDate: '2023-06-15',
-      },
-      {
-        id: 'book-2',
-        title: 'Astrology for Architecture',
-        author: 'Pt. Vishnu Prasad',
-        description: 'Discover how planetary positions influence building design and construction timing. This book bridges the gap between Jyotish and modern civil engineering.',
-        price: 449,
-        originalPrice: 599,
-        coverImage: 'https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400',
-        category: 'Astrology',
-        rating: 4.5,
-        reviewCount: 189,
-        inStock: true,
-        pages: 280,
-        language: 'English',
-        isbn: '978-0987654321',
-        publishedDate: '2023-03-20',
-      },
-      {
-        id: 'book-3',
-        title: 'Vasthu for Commercial Spaces',
-        author: 'Dr. Arun Sharma',
-        description: 'Specialized Vasthu principles for offices, shops, factories, and commercial buildings. Enhance prosperity and success through proper spatial arrangement.',
-        price: 699,
-        coverImage: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400',
-        category: 'Vasthu Shastra',
-        rating: 4.7,
-        reviewCount: 134,
-        inStock: true,
-        pages: 256,
-        language: 'English',
-        isbn: '978-1122334455',
-        publishedDate: '2024-01-10',
-      },
-      {
-        id: 'book-4',
-        title: 'Remedial Vasthu',
-        author: 'Dr. Arun Sharma',
-        description: 'Practical solutions for Vasthu defects without major structural changes. Cost-effective remedies using colors, symbols, and elements.',
-        price: 399,
-        originalPrice: 499,
-        coverImage: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400',
-        category: 'Vasthu Shastra',
-        rating: 4.6,
-        reviewCount: 312,
-        inStock: true,
-        pages: 200,
-        language: 'Hindi & English',
-        isbn: '978-5566778899',
-        publishedDate: '2022-11-05',
-      },
-    ];
-    
-    return { success: true, data: books };
+    try {
+      const response = await fetch(`${API_BASE_URL}/books`);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Books endpoint error:', error);
+      return { success: false, error: 'Failed to fetch books' };
+    }
   },
 
   async getBookById(id: string): Promise<ApiResponse<Book>> {
-    const response = await this.getBooks();
-    if (response.success && response.data) {
-      const book = response.data.find(b => b.id === id);
-      if (book) {
-        return { success: true, data: book };
-      }
+    try {
+      const response = await fetch(`${API_BASE_URL}/books/${id}`);
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Book endpoint error:', error);
+      return { success: false, error: 'Failed to fetch book' };
     }
-    return { success: false, error: 'Book not found' };
+  },
+
+  async createBook(bookData: Partial<Book>): Promise<ApiResponse<Book>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/books`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookData),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Create book error:', error);
+      return { success: false, error: 'Failed to create book' };
+    }
+  },
+
+  async updateBook(id: string, bookData: Partial<Book>): Promise<ApiResponse<Book>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/books/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(bookData),
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Update book error:', error);
+      return { success: false, error: 'Failed to update book' };
+    }
+  },
+
+  async deleteBook(id: string): Promise<ApiResponse<void>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/books/${id}`, {
+        method: 'DELETE',
+      });
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Delete book error:', error);
+      return { success: false, error: 'Failed to delete book' };
+    }
   },
 };
 

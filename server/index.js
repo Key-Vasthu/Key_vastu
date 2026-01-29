@@ -6,6 +6,7 @@ import { ordersRoutes } from './routes/orders.js';
 import { adminRoutes } from './routes/admin.js';
 import { blogRoutes } from './routes/blog.js';
 import { fileRoutes } from './routes/files.js';
+import { booksRoutes } from './routes/books.js';
 import { initDatabase } from './db/init.js';
 
 dotenv.config();
@@ -35,6 +36,7 @@ app.use('/api/orders', ordersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/files', fileRoutes);
+app.use('/api/books', booksRoutes);
 
 // Health check
 app.get('/api/health', async (req, res) => {

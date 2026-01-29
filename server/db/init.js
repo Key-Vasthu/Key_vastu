@@ -136,6 +136,33 @@ export async function initDatabase() {
       CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id)
     `);
 
+    // Create books table
+    console.log('📚 Initializing books table...');
+    await query(`
+      CREATE TABLE IF NOT EXISTS books (
+        id VARCHAR(255) PRIMARY KEY,
+        title VARCHAR(500) NOT NULL,
+        author VARCHAR(255) NOT NULL,
+        description TEXT,
+        price DECIMAL(10, 2) NOT NULL,
+        original_price DECIMAL(10, 2),
+        cover_image TEXT NOT NULL,
+        category VARCHAR(100) DEFAULT 'Vasthu Shastra',
+        rating DECIMAL(3, 1) DEFAULT 0,
+        review_count INTEGER DEFAULT 0,
+        in_stock BOOLEAN DEFAULT true,
+        pages INTEGER,
+        language VARCHAR(50) DEFAULT 'English',
+        isbn VARCHAR(50),
+        published_date DATE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await query(`CREATE INDEX IF NOT EXISTS idx_books_category ON books(category)`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_books_created ON books(created_at)`);
+    console.log('✅ books table initialized');
+
     // Create blog_posts table
     console.log('📝 Initializing blog_posts table...');
     try {

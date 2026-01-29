@@ -20,12 +20,15 @@ import {
   Phone,
   MapPin,
   Send,
+  Plus,
+  Upload,
+  X,
 } from 'lucide-react';
 import { Button, Card, Badge, Avatar, Input, Loading, Modal } from '../components/common';
-import { adminApi } from '../utils/api';
+import { adminApi, booksApi } from '../utils/api';
 import { useNotification } from '../contexts/NotificationContext';
 import { formatDate, formatCurrency } from '../utils/helpers';
-import type { User, Order, ChatMessage } from '../types';
+import type { User, Order, ChatMessage, Book } from '../types';
 
 // Stats Card Component
 interface StatCardProps {
@@ -102,27 +105,51 @@ const AdminDashboard: React.FC = () => {
   const [isSendingReply, setIsSendingReply] = useState(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState(false);
   const messagesEndRef = React.useRef<HTMLDivElement>(null);
+  
+  // Book management state
+  const [books, setBooks] = useState<Book[]>([]);
+  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
+  const [selectedBook, setSelectedBook] = useState<Book | null>(null);
+  const [isDeletingBook, setIsDeletingBook] = useState(false);
+  const [bookForm, setBookForm] = useState({
+    title: '',
+    author: '',
+    description: '',
+    price: '',
+    originalPrice: '',
+    coverImage: '',
+    category: 'Vasthu Shastra',
+    pages: '',
+    language: 'English',
+    isbn: '',
+    publishedDate: '',
+    inStock: true,
+  });
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [coverImagePreview, setCoverImagePreview] = useState<string>('');
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [statsRes, usersRes, ordersRes, threadsRes, membersRes] = await Promise.all([
+        const [statsRes, usersRes, ordersRes, threadsRes, membersRes, booksRes] = await Promise.all([
           adminApi.getStats(),
-        adminApi.getUsers(),
+          adminApi.getUsers(),
           adminApi.getOrders(),
           adminApi.getChatThreads(),
           adminApi.getMembersWithOrders(),
-      ]);
+          booksApi.getBooks(),
+        ]);
       
-      if (statsRes.success && statsRes.data) setStats(statsRes.data);
-      if (usersRes.success && usersRes.data) setUsers(usersRes.data);
+        if (statsRes.success && statsRes.data) setStats(statsRes.data);
+        if (usersRes.success && usersRes.data) setUsers(usersRes.data);
         if (ordersRes.success && ordersRes.data) setOrders(ordersRes.data);
         if (threadsRes.success && threadsRes.data) setChatThreads(threadsRes.data);
         if (membersRes.success && membersRes.data) setMembersWithOrders(membersRes.data);
+        if (booksRes.success && booksRes.data) setBooks(booksRes.data);
       } catch (error) {
         console.error('Error loading admin data:', error);
-        addNotification('error', 'Loading Error', 'Failed to load admin dashboard data.');
+        addNotification('error', 'Loading Error', 'Failed to load admin panel data.');
       }
       setIsLoading(false);
     };
@@ -211,13 +238,173 @@ const AdminDashboard: React.FC = () => {
     setIsSendingReply(false);
   };
 
+  // Book management functions
+  const handleOpenBookModal = (book?: Book) => {
+    if (book) {
+      setSelectedBook(book);
+      setBookForm({
+        title: book.title,
+        author: book.author,
+        description: book.description || '',
+        price: book.price.toString(),
+        originalPrice: book.originalPrice?.toString() || '',
+        coverImage: book.coverImage,
+        category: book.category,
+        pages: book.pages?.toString() || '',
+        language: book.language,
+        isbn: book.isbn || '',
+        publishedDate: book.publishedDate || '',
+        inStock: book.inStock,
+      });
+      setCoverImagePreview(book.coverImage);
+    } else {
+      setSelectedBook(null);
+      setBookForm({
+        title: '',
+        author: '',
+        description: '',
+        price: '',
+        originalPrice: '',
+        coverImage: '',
+        category: 'Vasthu Shastra',
+        pages: '',
+        language: 'English',
+        isbn: '',
+        publishedDate: '',
+        inStock: true,
+      });
+      setCoverImagePreview('');
+      setCoverImageFile(null);
+    }
+    setIsBookModalOpen(true);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        addNotification('error', 'File Too Large', 'Image must be less than 5MB');
+        return;
+      }
+      setCoverImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCoverImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUploadImage = async (): Promise<string> => {
+    if (!coverImageFile) return bookForm.coverImage;
+
+    try {
+      const formData = new FormData();
+      formData.append('file', coverImageFile);
+      formData.append('folder', 'books');
+
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+      const response = await fetch(`${API_BASE_URL}/files/upload`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (data.success && data.data?.url) {
+        return data.data.url;
+      }
+      throw new Error(data.error || 'Upload failed');
+    } catch (error) {
+      console.error('Image upload error:', error);
+      addNotification('error', 'Upload Failed', 'Failed to upload book cover image. Using URL instead.');
+      return bookForm.coverImage;
+    }
+  };
+
+  const handleSaveBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!bookForm.title || !bookForm.author || !bookForm.price) {
+      addNotification('error', 'Validation Error', 'Please fill in all required fields (Title, Author, Price)');
+      return;
+    }
+
+    try {
+      let coverImageUrl = bookForm.coverImage;
+      
+      // Upload image if file is selected
+      if (coverImageFile) {
+        coverImageUrl = await handleUploadImage();
+      }
+
+      const bookData = {
+        title: bookForm.title,
+        author: bookForm.author,
+        description: bookForm.description,
+        price: parseFloat(bookForm.price),
+        originalPrice: bookForm.originalPrice ? parseFloat(bookForm.originalPrice) : undefined,
+        coverImage: coverImageUrl,
+        category: bookForm.category,
+        pages: bookForm.pages ? parseInt(bookForm.pages) : undefined,
+        language: bookForm.language,
+        isbn: bookForm.isbn,
+        publishedDate: bookForm.publishedDate || undefined,
+        inStock: bookForm.inStock,
+      };
+
+      let response;
+      if (selectedBook) {
+        response = await booksApi.updateBook(selectedBook.id, bookData);
+      } else {
+        response = await booksApi.createBook(bookData);
+      }
+
+      if (response.success) {
+        addNotification('success', 'Success', selectedBook ? 'Book updated successfully' : 'Book created successfully');
+        setIsBookModalOpen(false);
+        
+        // Reload books
+        const booksRes = await booksApi.getBooks();
+        if (booksRes.success && booksRes.data) {
+          setBooks(booksRes.data);
+        }
+      } else {
+        addNotification('error', 'Error', response.error || 'Failed to save book');
+      }
+    } catch (error) {
+      console.error('Error saving book:', error);
+      addNotification('error', 'Error', 'Failed to save book');
+    }
+  };
+
+  const handleDeleteBook = async () => {
+    if (!selectedBook) return;
+
+    setIsDeletingBook(true);
+    try {
+      const response = await booksApi.deleteBook(selectedBook.id);
+      if (response.success) {
+        setBooks(prev => prev.filter(b => b.id !== selectedBook.id));
+        addNotification('success', 'Book Deleted', `${selectedBook.title} has been removed.`);
+        setIsBookModalOpen(false);
+        setSelectedBook(null);
+      } else {
+        addNotification('error', 'Error', response.error || 'Failed to delete book');
+      }
+    } catch (error) {
+      console.error('Error deleting book:', error);
+      addNotification('error', 'Error', 'Failed to delete book');
+    }
+    setIsDeletingBook(false);
+  };
+
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     user.email.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (isLoading) {
-    return <Loading fullScreen text="Loading admin dashboard..." />;
+    return <Loading fullScreen text="Loading admin panel..." />;
   }
 
   return (
@@ -229,8 +416,8 @@ const AdminDashboard: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-display font-bold text-astral-500">Admin Dashboard</h1>
-          <p className="text-earth-500 mt-1">Manage users, orders, and client communications</p>
+          <h1 className="text-3xl font-display font-bold text-astral-500">Admin Panel</h1>
+          <p className="text-earth-500 mt-1">Manage users, orders, books, and client communications</p>
         </motion.div>
 
         {/* Stats Grid */}
@@ -503,6 +690,112 @@ const AdminDashboard: React.FC = () => {
                   )}
                 </tbody>
               </table>
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* Book Management */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="mb-6"
+        >
+          <Card>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
+                <BookOpen className="text-saffron-500" />
+                Book Management ({books.length})
+              </h2>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => handleOpenBookModal()}
+              >
+                <Plus size={16} className="mr-1" /> Add Book
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {books.length === 0 ? (
+                <div className="col-span-full text-center py-12">
+                  <BookOpen className="w-16 h-16 text-earth-300 mx-auto mb-4" />
+                  <p className="text-earth-500 mb-4">No books found</p>
+                  <Button variant="primary" onClick={() => handleOpenBookModal()}>
+                    <Plus size={16} className="mr-2" /> Add First Book
+                  </Button>
+                </div>
+              ) : (
+                books.map((book) => (
+                  <div
+                    key={book.id}
+                    className="border border-earth-200 rounded-xl overflow-hidden hover:shadow-lg transition-shadow bg-white"
+                  >
+                    <div className="relative h-48 bg-earth-100">
+                      <img
+                        src={book.coverImage}
+                        alt={book.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x400?text=No+Image';
+                        }}
+                      />
+                      <div className="absolute top-2 right-2">
+                        <Badge variant={book.inStock ? 'success' : 'error'} size="sm">
+                          {book.inStock ? 'In Stock' : 'Out of Stock'}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-semibold text-earth-800 mb-1 line-clamp-2">{book.title}</h3>
+                      <p className="text-sm text-earth-500 mb-2">{book.author}</p>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-lg font-bold text-saffron-600">
+                          ₹{book.price}
+                        </span>
+                        {book.originalPrice && (
+                          <span className="text-sm text-earth-400 line-through">
+                            ₹{book.originalPrice}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="flex-1"
+                          onClick={() => handleOpenBookModal(book)}
+                        >
+                          <Edit size={14} className="mr-1" /> Edit
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={async () => {
+                            setSelectedBook(book);
+                            setIsDeletingBook(true);
+                            try {
+                              const response = await booksApi.deleteBook(book.id);
+                              if (response.success) {
+                                setBooks(prev => prev.filter(b => b.id !== book.id));
+                                addNotification('success', 'Book Deleted', `${book.title} has been removed.`);
+                              } else {
+                                addNotification('error', 'Error', response.error || 'Failed to delete book');
+                              }
+                            } catch (error) {
+                              console.error('Error deleting book:', error);
+                              addNotification('error', 'Error', 'Failed to delete book');
+                            }
+                            setIsDeletingBook(false);
+                          }}
+                        >
+                          <Trash2 size={14} />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </Card>
         </motion.div>
