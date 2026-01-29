@@ -58,7 +58,7 @@ const ElephantBorder: React.FC<{ position: 'top' | 'bottom' }> = ({ position }) 
             }}
           >
             <img 
-              src={getR2AssetUrl('elephant.png')} 
+              src={getR2AssetUrl('elephant.png', '')} 
               alt="" 
               className="h-full w-auto object-contain opacity-80 flex-shrink-0"
               style={{ 
@@ -98,7 +98,7 @@ const HeroSection: React.FC = () => {
         }}
       >
         <img 
-          src={getR2AssetUrl('vasthu-plan.png')} 
+          src={getR2AssetUrl('vasthu-plan.png', '')} 
           alt="" 
           className="w-full h-full object-contain"
         />
@@ -117,7 +117,7 @@ const HeroSection: React.FC = () => {
         >
           <div className="w-[360px] h-[360px] sm:w-[400px] sm:h-[400px] lg:w-[450px] lg:h-[450px]">
             <img 
-              src={getR2AssetUrl('vasthu-plan.png')} 
+              src={getR2AssetUrl('vasthu-plan.png', '')} 
               alt="Vasthu & Astrology" 
               className="w-full h-full object-contain drop-shadow-2xl"
             />

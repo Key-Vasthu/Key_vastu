@@ -2017,7 +2017,7 @@ const DrawingBoard: React.FC = () => {
               style={{ opacity: 0.08 }}
             >
               <img
-                src={getR2AssetUrl('vasthu-plan.png')}
+                src={getR2AssetUrl('vasthu-plan.png', '')}
                 alt="Vasthu Compass"
                 className="object-contain"
                 style={{

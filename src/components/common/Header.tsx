@@ -38,7 +38,7 @@ const Logo: React.FC = () => {
     <Link to="/" onClick={handleLogoClick} className="flex items-center gap-3 group flex-shrink-0">
       <div className="relative w-16 h-16 flex-shrink-0">
         <img
-          src={getR2AssetUrl('logoo.png')}
+          src={getR2AssetUrl('logoo.png', '')}
           alt="KeyVasthu logo"
           className="w-full h-full object-contain"
           loading="lazy"
