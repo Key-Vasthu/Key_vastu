@@ -117,7 +117,7 @@ const HeroSection: React.FC = () => {
         >
           <div className="w-[360px] h-[360px] sm:w-[400px] sm:h-[400px] lg:w-[450px] lg:h-[450px]">
             <img 
-              src="/vasthu-plan.png" 
+              src={getR2AssetUrl('vasthu-plan.png')} 
               alt="Vasthu & Astrology" 
               className="w-full h-full object-contain drop-shadow-2xl"
             />

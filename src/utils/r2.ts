@@ -35,9 +35,13 @@ export function getR2Url(filePath: string): string {
 /**
  * Get R2 URL for common static assets
  * @param {string} assetName - Asset name (e.g., 'banner.jpg', 'logoo.png')
- * @param {string} folder - Folder in R2 (default: 'images')
+ * @param {string} folder - Folder in R2 (default: 'images'). Use empty string '' for root level
  * @returns {string} Full R2 URL
  */
 export function getR2AssetUrl(assetName: string, folder: string = 'images'): string {
+  if (!folder) {
+    // If folder is empty, use root level
+    return getR2Url(assetName);
+  }
   return getR2Url(`${folder}/${assetName}`);
 }
