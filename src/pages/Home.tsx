@@ -514,7 +514,7 @@ const VasthuAstrologySection: React.FC = () => {
             Ancient Wisdom, Modern Application
           </motion.div>
           <motion.h2 variants={fadeInUp} className="text-2xl md:text-3xl font-display font-bold text-white mb-4">
-            The Science of <span className="text-gold-400">Vasthu</span>  <span className="text-saffron-400"></span>
+            The Science of <span className="text-gold-400">Vasthu</span>
           </motion.h2>
           <motion.p variants={fadeInUp} className="text-base text-earth-200 max-w-3xl mx-auto">
             Experience the harmonious blend of Vasthu Shastra's spatial science and Vedic Astrology's cosmic wisdom
