@@ -12,7 +12,6 @@ import {
   ShoppingCart,
   LogIn,
   LogOut,
-  LayoutDashboard,
   ChevronDown,
   Info,
   FileText,
@@ -104,7 +103,6 @@ const Header: React.FC = () => {
     { to: '/books', icon: <BookOpen size={18} />, label: 'Books' },
     { to: '/blog', icon: <FileText size={18} />, label: 'Blog' },
     { to: '/about', icon: <Info size={18} />, label: 'About' },
-    { to: '/dashboard', icon: <LayoutDashboard size={18} />, label: 'Dashboard' },
     { to: '/chat', icon: <MessageCircle size={18} />, label: 'Chat' },
     { to: '/drawing-board', icon: <PenTool size={18} />, label: 'Drawing' },
   ];
