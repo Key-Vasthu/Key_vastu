@@ -75,13 +75,27 @@ export const authApi = {
 
   async register(email: string, password: string, name: string, phone?: string): Promise<ApiResponse<{ user: User }>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      const url = `${API_BASE_URL}/auth/register`;
+      console.log('Registering to:', url);
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password, name, phone }),
       });
+
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text.substring(0, 200));
+        return {
+          success: false,
+          error: `Server returned invalid response. Please check that the backend server is running and the API endpoint is correct. (Status: ${response.status})`,
+        };
+      }
 
       const data = await response.json();
 
