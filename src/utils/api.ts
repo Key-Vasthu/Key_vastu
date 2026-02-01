@@ -43,15 +43,29 @@ const API_BASE_URL = getApiBaseUrl();
 export const authApi = {
   async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
     try {
-      // Always use full URL to avoid relative path issues
-      const baseUrl = API_BASE_URL.startsWith('http') 
-        ? API_BASE_URL 
-        : `${window.location.protocol}//${window.location.host}${API_BASE_URL}`;
+      // Construct full URL - ensure it's absolute
+      let fullUrl: string;
       
-      const url = `${baseUrl}/auth/login`;
-      console.log('Logging in to:', url);
+      if (API_BASE_URL.startsWith('http://') || API_BASE_URL.startsWith('https://')) {
+        // Already a full URL
+        fullUrl = `${API_BASE_URL}/auth/login`;
+      } else if (API_BASE_URL.startsWith('/')) {
+        // Relative URL - convert to absolute
+        if (import.meta.env.DEV) {
+          fullUrl = `http://localhost:3001/api/auth/login`;
+        } else {
+          const protocol = window.location.protocol;
+          const host = window.location.host;
+          fullUrl = `${protocol}//${host}${API_BASE_URL}/auth/login`;
+        }
+      } else {
+        // Default to localhost:3001 in development
+        fullUrl = `http://localhost:3001/api/auth/login`;
+      }
       
-      const response = await fetch(url, {
+      console.log('Logging in to:', fullUrl);
+      
+      const response = await fetch(fullUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -94,16 +108,32 @@ export const authApi = {
 
   async register(email: string, password: string, name: string, phone?: string): Promise<ApiResponse<{ user: User }>> {
     try {
-      // Always use full URL to avoid relative path issues
-      const baseUrl = API_BASE_URL.startsWith('http') 
-        ? API_BASE_URL 
-        : `${window.location.protocol}//${window.location.host}${API_BASE_URL}`;
+      // Construct full URL - ensure it's absolute
+      let fullUrl: string;
       
-      const url = `${baseUrl}/auth/register`;
-      console.log('Registering to:', url);
+      if (API_BASE_URL.startsWith('http://') || API_BASE_URL.startsWith('https://')) {
+        // Already a full URL
+        fullUrl = `${API_BASE_URL}/auth/register`;
+      } else if (API_BASE_URL.startsWith('/')) {
+        // Relative URL - convert to absolute
+        const protocol = window.location.protocol;
+        const host = window.location.host;
+        // In development, use localhost:3001, otherwise use current host
+        if (import.meta.env.DEV) {
+          fullUrl = `http://localhost:3001/api/auth/register`;
+        } else {
+          fullUrl = `${protocol}//${host}${API_BASE_URL}/auth/register`;
+        }
+      } else {
+        // Default to localhost:3001 in development
+        fullUrl = `http://localhost:3001/api/auth/register`;
+      }
+      
+      console.log('Registering to:', fullUrl);
       console.log('API_BASE_URL:', API_BASE_URL);
+      console.log('Request body:', { email, name, phone: phone ? '***' : undefined });
       
-      const response = await fetch(url, {
+      const response = await fetch(fullUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
