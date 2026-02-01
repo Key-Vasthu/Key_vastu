@@ -11,6 +11,9 @@ const router = express.Router();
  */
 router.post('/register', async (req, res) => {
   try {
+    // Ensure JSON response
+    res.setHeader('Content-Type', 'application/json');
+    
     const { email, password, name, phone } = req.body;
 
     // Validate input
@@ -113,6 +116,9 @@ router.post('/register', async (req, res) => {
  */
 router.post('/login', async (req, res) => {
   try {
+    // Ensure JSON response
+    res.setHeader('Content-Type', 'application/json');
+    
     const { email, password } = req.body;
 
     // Validate input
