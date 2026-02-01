@@ -89,13 +89,31 @@ app.get('/api/health', async (req, res) => {
 });
 
 // 404 handler - must be after all routes
+// Handle OPTIONS requests (CORS preflight) before 404
+app.use((req, res, next) => {
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return res.sendStatus(200);
+  }
+  next();
+});
+
+// 404 handler - only for API routes
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    error: 'Route not found',
-    path: req.path,
-    method: req.method,
-  });
+  // Only return JSON for API routes
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({
+      success: false,
+      error: 'Route not found',
+      path: req.path,
+      method: req.method,
+    });
+  }
+  
+  // For non-API routes, return 404 but don't interfere with frontend routing
+  res.status(404).send('Not found');
 });
 
 // Error handler
