@@ -43,13 +43,25 @@ const API_BASE_URL = getApiBaseUrl();
 export const authApi = {
   async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const url = `${API_BASE_URL}/auth/login`;
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
       });
+
+      // Check if response is JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response from login:', text.substring(0, 200));
+        return {
+          success: false,
+          error: `Server returned invalid response. Please check that the backend server is running and the API endpoint is correct. (Status: ${response.status})`,
+        };
+      }
 
       const data = await response.json();
 
