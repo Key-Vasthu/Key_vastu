@@ -43,7 +43,14 @@ const API_BASE_URL = getApiBaseUrl();
 export const authApi = {
   async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
     try {
-      const url = `${API_BASE_URL}/auth/login`;
+      // Always use full URL to avoid relative path issues
+      const baseUrl = API_BASE_URL.startsWith('http') 
+        ? API_BASE_URL 
+        : `${window.location.protocol}//${window.location.host}${API_BASE_URL}`;
+      
+      const url = `${baseUrl}/auth/login`;
+      console.log('Logging in to:', url);
+      
       const response = await fetch(url, {
         method: 'POST',
         headers: {
@@ -87,8 +94,14 @@ export const authApi = {
 
   async register(email: string, password: string, name: string, phone?: string): Promise<ApiResponse<{ user: User }>> {
     try {
-      const url = `${API_BASE_URL}/auth/register`;
+      // Always use full URL to avoid relative path issues
+      const baseUrl = API_BASE_URL.startsWith('http') 
+        ? API_BASE_URL 
+        : `${window.location.protocol}//${window.location.host}${API_BASE_URL}`;
+      
+      const url = `${baseUrl}/auth/register`;
       console.log('Registering to:', url);
+      console.log('API_BASE_URL:', API_BASE_URL);
       
       const response = await fetch(url, {
         method: 'POST',

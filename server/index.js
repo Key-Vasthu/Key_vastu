@@ -74,9 +74,30 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// 404 handler - must be after all routes
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    error: 'Route not found',
+    path: req.path,
+    method: req.method,
+  });
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error('Server error:', err);
+  res.status(500).json({
+    success: false,
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? err.message : undefined,
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📊 Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
   console.log(`☁️  R2 Storage: ${process.env.R2_BUCKET_NAME ? 'Configured' : 'Not configured'}`);
+  console.log(`🔗 API endpoints available at http://localhost:${PORT}/api`);
 });
 
