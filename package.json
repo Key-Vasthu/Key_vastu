@@ -15,7 +15,10 @@
     "view-chat": "node view-chat-data.js",
     "upload-r2-images": "node upload-images-to-r2.js",
     "vercel-build": "npm run build",
-    "preinstall": "npm config set audit false && npm config set fund false"
+    "preinstall": "npm config set audit false && npm config set fund false",
+    "setup:api": "node -e \"const fs=require('fs');const env='.env';let content=fs.existsSync(env)?fs.readFileSync(env,'utf8'):'';if(!content.includes('VITE_API_URL')){content+='\\n# API Configuration\\nVITE_API_URL=http://localhost:3001/api\\n';fs.writeFileSync(env,content);console.log('✅ Added VITE_API_URL to .env');}else{console.log('ℹ️  VITE_API_URL already exists');}\"",
+    "setup:api:ps1": "powershell -ExecutionPolicy Bypass -File setup-api-env.ps1",
+    "setup:api:sh": "bash setup-api-env.sh"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.972.0",

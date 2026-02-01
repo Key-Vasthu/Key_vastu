@@ -4,9 +4,34 @@
 
 If you're getting "Cannot connect to server" error during registration/login, it means the frontend cannot reach the backend API.
 
-## Solution: Configure VITE_API_URL
+## Solution: Automatic Configuration (Recommended)
 
-### For Local Development
+The API configuration is now **automatically set up**! The system will use `http://localhost:3001/api` in development by default.
+
+### Automatic Setup (One-time)
+
+Run one of these commands to automatically configure your `.env` file:
+
+**Windows (PowerShell):**
+```bash
+npm run setup:api:ps1
+```
+
+**Linux/Mac (Bash):**
+```bash
+npm run setup:api:sh
+```
+
+**Or use the Node.js script (cross-platform):**
+```bash
+npm run setup:api
+```
+
+This will automatically add `VITE_API_URL=http://localhost:3001/api` to your `.env` file.
+
+### Manual Setup (Optional)
+
+If you prefer to set it up manually:
 
 1. Create a `.env` file in the root directory (if it doesn't exist)
 2. Add the following line:
