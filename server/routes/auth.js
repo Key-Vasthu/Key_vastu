@@ -11,8 +11,16 @@ const router = express.Router();
  */
 router.post('/register', async (req, res) => {
   try {
-    // Ensure JSON response
+    // Ensure JSON response - set headers first
     res.setHeader('Content-Type', 'application/json');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    
+    console.log('📝 Registration request received:', {
+      email: req.body?.email,
+      name: req.body?.name,
+      hasPassword: !!req.body?.password,
+      hasPhone: !!req.body?.phone
+    });
     
     const { email, password, name, phone } = req.body;
 
