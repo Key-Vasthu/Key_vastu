@@ -51,10 +51,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return false;
   }, []);
 
-  const register = useCallback(async (email: string, password: string, name: string): Promise<boolean> => {
+  const register = useCallback(async (email: string, password: string, name: string, phone?: string): Promise<boolean> => {
     setState(prev => ({ ...prev, isLoading: true }));
     
-    const response = await authApi.register(email, password, name);
+    const response = await authApi.register(email, password, name, phone);
     
     setState(prev => ({ ...prev, isLoading: false }));
     return response.success;

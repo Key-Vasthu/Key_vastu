@@ -59,7 +59,8 @@ const Login: React.FC = () => {
         const user = userData ? JSON.parse(userData) : null;
         
         // Redirect admin to admin dashboard, others to regular dashboard
-        if (user && (user.role === 'admin' || formData.email.toLowerCase().includes('admin'))) {
+        // Check role from database (user.role === 'admin')
+        if (user && user.role === 'admin') {
           addNotification('success', 'Welcome Admin!', 'You have successfully logged in as administrator.');
           navigate('/admin');
         } else {

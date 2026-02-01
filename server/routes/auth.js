@@ -11,7 +11,7 @@ const router = express.Router();
  */
 router.post('/register', async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name, phone } = req.body;
 
     // Validate input
     if (!email || !password || !name) {
@@ -61,9 +61,9 @@ router.post('/register', async (req, res) => {
     const role = userEmail.includes('admin') ? 'admin' : 'user';
 
     await query(
-      `INSERT INTO users (id, email, name, password, role, created_at)
-       VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)`,
-      [userId, userEmail, name.trim(), hashedPassword, role]
+      `INSERT INTO users (id, email, name, password, phone, role, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP)`,
+      [userId, userEmail, name.trim(), hashedPassword, phone ? phone.trim() : null, role]
     );
 
     // Return user data (without password)
@@ -71,6 +71,7 @@ router.post('/register', async (req, res) => {
       id: userId,
       email: userEmail,
       name: name.trim(),
+      phone: phone ? phone.trim() : null,
       role,
       createdAt: new Date().toISOString(),
     };
@@ -107,7 +108,7 @@ router.post('/login', async (req, res) => {
 
     // Find user by email
     const result = await query(
-      'SELECT id, email, name, password, role, avatar, created_at, last_login FROM users WHERE email = $1',
+      'SELECT id, email, name, password, role, avatar, phone, created_at, last_login FROM users WHERE email = $1',
       [email.toLowerCase().trim()]
     );
 
@@ -152,6 +153,7 @@ router.post('/login', async (req, res) => {
       name: user.name,
       role: user.role,
       avatar: user.avatar,
+      phone: user.phone,
       createdAt: user.created_at ? user.created_at.toISOString() : new Date().toISOString(),
       lastLogin: new Date().toISOString(),
     };

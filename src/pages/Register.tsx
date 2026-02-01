@@ -94,11 +94,11 @@ const Register: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      const success = await register(formData.email, formData.password, formData.name);
+      const success = await register(formData.email, formData.password, formData.name, formData.phone);
       
       if (success) {
         setIsSuccess(true);
-        addNotification('success', 'Registration Successful!', 'Please check your email to verify your account.');
+        addNotification('success', 'Registration Successful!', 'Your account has been created. You can now login.');
       } else {
         addNotification('error', 'Registration Failed', 'Email may already be in use. Please try again.');
       }
@@ -131,8 +131,8 @@ const Register: React.FC = () => {
               Registration Successful!
             </h2>
             <p className="text-earth-600 mb-6">
-              We've sent a verification link to <strong>{formData.email}</strong>. 
-              Please check your inbox to activate your account.
+              Your account has been created successfully! 
+              You can now login with your email <strong>{formData.email}</strong> and password.
             </p>
             <div className="space-y-3">
               <Link to="/login">

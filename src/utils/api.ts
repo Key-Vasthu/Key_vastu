@@ -54,14 +54,14 @@ export const authApi = {
     }
   },
 
-  async register(email: string, password: string, name: string): Promise<ApiResponse<{ user: User }>> {
+  async register(email: string, password: string, name: string, phone?: string): Promise<ApiResponse<{ user: User }>> {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password, name }),
+        body: JSON.stringify({ email, password, name, phone }),
       });
 
       const data = await response.json();
