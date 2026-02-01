@@ -15,8 +15,27 @@ const randomDelay = (min = 300, max = 1500) => delay(Math.random() * (max - min)
 // Simulate occasional errors (10% chance)
 const maybeError = () => Math.random() < 0.1;
 
-// API base URL
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+// API base URL - supports both relative and absolute URLs
+// In production, set VITE_API_URL to your backend server URL (e.g., https://your-backend.onrender.com/api)
+// If not set, tries to use relative URL for same-domain deployments
+const getApiBaseUrl = () => {
+  // If explicitly set, use it
+  if (import.meta.env.VITE_API_URL) {
+    return import.meta.env.VITE_API_URL;
+  }
+  
+  // In development, use localhost
+  if (import.meta.env.DEV) {
+    return 'http://localhost:3001/api';
+  }
+  
+  // In production, try relative URL first (for same-domain deployments)
+  // If backend is on same domain, use relative path
+  // Otherwise, this will need VITE_API_URL to be set
+  return '/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 /**
  * Authentication API - Real backend integration
