@@ -154,14 +154,21 @@ router.post('/login', async (req, res) => {
     }
 
     // Verify password
+    console.log('Verifying password for user:', user.email);
+    console.log('Password hash exists:', !!user.password);
+    
     const passwordMatch = await bcrypt.compare(password, user.password);
+    console.log('Password match:', passwordMatch);
 
     if (!passwordMatch) {
+      console.log('Password verification failed for:', user.email);
       return res.status(401).json({
         success: false,
         error: 'Invalid password. Please check your password and try again.',
       });
     }
+    
+    console.log('Password verified successfully for:', user.email);
 
     // Update last_login
     await query(

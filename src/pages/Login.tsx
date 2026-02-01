@@ -68,7 +68,8 @@ const Login: React.FC = () => {
           navigate('/dashboard');
         }
       } else {
-        addNotification('error', 'Login failed', 'Invalid email or password. Please try again.');
+        // Error message will be shown by the login function
+        // Don't show generic message here
       }
     } catch {
       addNotification('error', 'Error', 'Something went wrong. Please try again later.');

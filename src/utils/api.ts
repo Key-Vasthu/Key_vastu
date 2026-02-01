@@ -74,17 +74,38 @@ export const authApi = {
       });
 
       // Check if response is JSON
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
         const text = await response.text();
-        console.error('Non-JSON response from login:', text.substring(0, 200));
+        console.error('Non-JSON response from login:', {
+          status: response.status,
+          contentType,
+          url: response.url,
+          preview: text.substring(0, 500)
+        });
+        
+        // Try to parse as JSON anyway (in case Content-Type is wrong)
+        try {
+          const jsonData = JSON.parse(text);
+          if (jsonData.success !== undefined) {
+            return {
+              success: jsonData.success,
+              error: jsonData.error,
+              data: jsonData.data,
+            };
+          }
+        } catch (e) {
+          // Not JSON
+        }
+        
         return {
           success: false,
-          error: `Server returned invalid response. Please check that the backend server is running and the API endpoint is correct. (Status: ${response.status})`,
+          error: `Server returned invalid response (HTML instead of JSON). Status: ${response.status}. Please check that the backend server is running on port 3001 and the route /api/auth/login exists.`,
         };
       }
 
       const data = await response.json();
+      console.log('Login response:', { success: data.success, hasData: !!data.data, error: data.error });
 
       if (!response.ok) {
         return {

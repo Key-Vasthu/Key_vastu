@@ -42,18 +42,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = useCallback(async (email: string, password: string): Promise<boolean> => {
     setState(prev => ({ ...prev, isLoading: true }));
     
-    const response = await authApi.login(email, password);
-    
-    if (response.success && response.data) {
-      const { user } = response.data;
-      localStorage.setItem('keyvasthu_user', JSON.stringify(user));
-      localStorage.setItem('keyvasthu_token', response.data.token);
-      setState({ user, isAuthenticated: true, isLoading: false });
-      return true;
+    try {
+      const response = await authApi.login(email, password);
+      
+      if (response.success && response.data) {
+        const { user } = response.data;
+        localStorage.setItem('keyvasthu_user', JSON.stringify(user));
+        localStorage.setItem('keyvasthu_token', response.data.token);
+        setState({ user, isAuthenticated: true, isLoading: false });
+        return true;
+      } else {
+        // Show the actual error message from the API
+        console.error('Login failed:', response.error);
+        setState(prev => ({ ...prev, isLoading: false }));
+        return false;
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setState(prev => ({ ...prev, isLoading: false }));
+      return false;
     }
-    
-    setState(prev => ({ ...prev, isLoading: false }));
-    return false;
   }, []);
 
   const register = useCallback(async (email: string, password: string, name: string, phone?: string): Promise<RegisterResult> => {
