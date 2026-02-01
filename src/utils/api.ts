@@ -99,12 +99,17 @@ export const authApi = {
       };
     } catch (error: any) {
       console.error('Registration error:', error);
+      console.error('Attempted API URL:', `${API_BASE_URL}/auth/register`);
       
       // Handle network errors
       if (error instanceof TypeError && error.message.includes('fetch')) {
+        const errorMsg = API_BASE_URL.includes('localhost') 
+          ? 'Cannot connect to server. Make sure the backend server is running on port 3001. Run: npm run server'
+          : `Cannot connect to server at ${API_BASE_URL}. Please ensure the backend server is running and VITE_API_URL is configured correctly.`;
+        
         return {
           success: false,
-          error: 'Cannot connect to server. Please check your internet connection and try again.',
+          error: errorMsg,
         };
       }
       
