@@ -51,28 +51,37 @@ const Login: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      const success = await login(formData.email, formData.password);
+      // Call login API directly to get error message
+      const { authApi } = await import('../utils/api');
+      const response = await authApi.login(formData.email, formData.password);
       
-      if (success) {
-        // Get user from localStorage to check role
-        const userData = localStorage.getItem('keyvasthu_user');
-        const user = userData ? JSON.parse(userData) : null;
+      if (response.success && response.data) {
+        // Use the login function to set user in context
+        const success = await login(formData.email, formData.password);
         
-        // Redirect admin to admin dashboard, others to regular dashboard
-        // Check role from database (user.role === 'admin')
-        if (user && user.role === 'admin') {
-          addNotification('success', 'Welcome Admin!', 'You have successfully logged in as administrator.');
-          navigate('/admin');
-        } else {
-          addNotification('success', 'Welcome back!', 'You have successfully logged in.');
-          navigate('/dashboard');
+        if (success) {
+          // Get user from localStorage to check role
+          const userData = localStorage.getItem('keyvasthu_user');
+          const user = userData ? JSON.parse(userData) : null;
+          
+          // Redirect admin to admin dashboard, others to regular dashboard
+          // Check role from database (user.role === 'admin')
+          if (user && user.role === 'admin') {
+            addNotification('success', 'Welcome Admin!', 'You have successfully logged in as administrator.');
+            navigate('/admin');
+          } else {
+            addNotification('success', 'Welcome back!', 'You have successfully logged in.');
+            navigate('/dashboard');
+          }
         }
       } else {
-        // Error message will be shown by the login function
-        // Don't show generic message here
+        // Show the actual error message from the API
+        const errorMessage = response.error || 'Invalid email or password. Please try again.';
+        addNotification('error', 'Login failed', errorMessage);
       }
-    } catch {
-      addNotification('error', 'Error', 'Something went wrong. Please try again later.');
+    } catch (error: any) {
+      console.error('Login error:', error);
+      addNotification('error', 'Error', error.message || 'Something went wrong. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
