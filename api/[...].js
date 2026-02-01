@@ -1,10 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { authRoutes } from '../server/routes/auth.js';
 import { chatRoutes } from '../server/routes/chat.js';
 import { ordersRoutes } from '../server/routes/orders.js';
 import { adminRoutes } from '../server/routes/admin.js';
 import { blogRoutes } from '../server/routes/blog.js';
+import { fileRoutes } from '../server/routes/files.js';
+import { booksRoutes } from '../server/routes/books.js';
 import { initDatabase } from '../server/db/init.js';
 
 dotenv.config();
@@ -28,10 +31,13 @@ app.use(express.json());
 })();
 
 // Routes - Vercel routes /api/* to this handler, so we need /api prefix
+app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/blog', blogRoutes);
+app.use('/api/files', fileRoutes);
+app.use('/api/books', booksRoutes);
 
 // Health check
 app.get('/api/health', async (req, res) => {
