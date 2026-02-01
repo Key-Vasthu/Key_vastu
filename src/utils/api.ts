@@ -162,35 +162,43 @@ export const authApi = {
         body: JSON.stringify({ email, password, name, phone }),
       });
 
-      // Check if response is JSON
+      // Always try to parse as JSON first
+      let data;
       const contentType = response.headers.get('content-type') || '';
-      if (!contentType.includes('application/json')) {
+      
+      try {
         const text = await response.text();
-        console.error('Non-JSON response from register:', {
-          status: response.status,
-          contentType,
-          url: response.url,
-          preview: text.substring(0, 500)
-        });
         
-        // Try to parse as JSON anyway (in case Content-Type is wrong)
+        // Try to parse as JSON
         try {
-          const jsonData = JSON.parse(text);
-          // If it parsed successfully, use it
-          if (jsonData.success !== undefined) {
+          data = JSON.parse(text);
+        } catch (parseError) {
+          // Not JSON - log the actual response
+          console.error('Non-JSON response from register:', {
+            status: response.status,
+            contentType,
+            url: response.url,
+            preview: text.substring(0, 500),
+            fullText: text.length < 1000 ? text : text.substring(0, 1000) + '...'
+          });
+          
+          // Check if it's HTML
+          if (text.trim().startsWith('<!') || text.includes('<html')) {
             return {
-              success: jsonData.success,
-              error: jsonData.error,
-              data: jsonData.data,
+              success: false,
+              error: `Server returned HTML instead of JSON. This usually means the backend server is not running or the route doesn't exist. Please ensure the server is running on port 3001: npm run server`,
             };
           }
-        } catch (e) {
-          // Not JSON, return error
+          
+          return {
+            success: false,
+            error: `Server returned invalid response. Status: ${response.status}. Response: ${text.substring(0, 200)}`,
+          };
         }
-        
+      } catch (error) {
         return {
           success: false,
-          error: `Server returned invalid response (HTML instead of JSON). Status: ${response.status}. Please check that the backend server is running on port 3001 and the route /api/auth/register exists.`,
+          error: `Failed to read server response: ${error.message}`,
         };
       }
 

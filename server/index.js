@@ -31,7 +31,19 @@ app.options('*', (req, res) => {
   res.sendStatus(200);
 });
 
+// Body parser - must be before routes
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Request logging middleware (for debugging)
+app.use((req, res, next) => {
+  if (req.path.startsWith('/api')) {
+    console.log(`${req.method} ${req.path}`, {
+      body: req.method === 'POST' ? { ...req.body, password: req.body.password ? '***' : undefined } : undefined
+    });
+  }
+  next();
+});
 
 // Initialize database - wait for it to complete
 (async () => {
