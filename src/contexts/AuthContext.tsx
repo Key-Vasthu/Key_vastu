@@ -4,7 +4,7 @@ import { authApi } from '../utils/api';
 
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string, name: string) => Promise<boolean>;
+  register: (email: string, password: string, name: string, phone?: string) => Promise<boolean>;
   logout: () => Promise<void>;
   loginAsGuest: () => void;
 }
