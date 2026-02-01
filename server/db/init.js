@@ -10,12 +10,26 @@ export async function initDatabase() {
         id VARCHAR(255) PRIMARY KEY,
         email VARCHAR(255) UNIQUE NOT NULL,
         name VARCHAR(255) NOT NULL,
+        password VARCHAR(255) NOT NULL,
         avatar TEXT,
         role VARCHAR(50) DEFAULT 'user',
         phone VARCHAR(50),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         last_login TIMESTAMP
       )
+    `);
+
+    // Add password column if it doesn't exist (for existing databases)
+    await query(`
+      DO $$ 
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns 
+          WHERE table_name = 'users' AND column_name = 'password'
+        ) THEN
+          ALTER TABLE users ADD COLUMN password VARCHAR(255);
+        END IF;
+      END $$;
     `);
 
     // Create chat_threads table

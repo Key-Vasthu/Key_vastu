@@ -7,6 +7,7 @@ import { adminRoutes } from './routes/admin.js';
 import { blogRoutes } from './routes/blog.js';
 import { fileRoutes } from './routes/files.js';
 import { booksRoutes } from './routes/books.js';
+import { authRoutes } from './routes/auth.js';
 import { initDatabase } from './db/init.js';
 
 dotenv.config();
@@ -31,6 +32,7 @@ app.use(express.json());
 })();
 
 // Routes
+app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/orders', ordersRoutes);
 app.use('/api/admin', adminRoutes);

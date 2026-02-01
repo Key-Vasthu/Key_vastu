@@ -15,49 +15,76 @@ const randomDelay = (min = 300, max = 1500) => delay(Math.random() * (max - min)
 // Simulate occasional errors (10% chance)
 const maybeError = () => Math.random() < 0.1;
 
+// API base URL
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+
 /**
- * Authentication API stubs
+ * Authentication API - Real backend integration
  */
 export const authApi = {
-  async login(email: string, _password: string): Promise<ApiResponse<{ user: User; token: string }>> {
-    await randomDelay();
-    
-    if (maybeError()) {
-      return { success: false, error: 'Network error. Please try again.' };
+  async login(email: string, password: string): Promise<ApiResponse<{ user: User; token: string }>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.error || 'Login failed. Please try again.',
+        };
+      }
+
+      return {
+        success: true,
+        data: data.data,
+      };
+    } catch (error) {
+      console.error('Login error:', error);
+      return {
+        success: false,
+        error: 'Network error. Please check your connection and try again.',
+      };
     }
-    
-    // Simulate successful login
-    const user: User = {
-      id: 'user-1',
-      email,
-      name: email.split('@')[0],
-      role: email.includes('admin') ? 'admin' : 'user',
-      createdAt: new Date().toISOString(),
-      lastLogin: new Date().toISOString(),
-    };
-    
-    return {
-      success: true,
-      data: { user, token: 'mock-jwt-token-' + Date.now() },
-    };
   },
 
-  async register(email: string, _password: string, name: string): Promise<ApiResponse<{ user: User }>> {
-    await randomDelay();
-    
-    if (maybeError()) {
-      return { success: false, error: 'Registration failed. Email may already be in use.' };
+  async register(email: string, password: string, name: string): Promise<ApiResponse<{ user: User }>> {
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, name }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.error || 'Registration failed. Please try again.',
+        };
+      }
+
+      return {
+        success: true,
+        data: data.data,
+        message: data.message || 'Registration successful!',
+      };
+    } catch (error) {
+      console.error('Registration error:', error);
+      return {
+        success: false,
+        error: 'Network error. Please check your connection and try again.',
+      };
     }
-    
-    const user: User = {
-      id: 'user-' + Date.now(),
-      email,
-      name,
-      role: 'user',
-      createdAt: new Date().toISOString(),
-    };
-    
-    return { success: true, data: { user }, message: 'Verification email sent!' };
   },
 
   async verifyEmail(_token: string): Promise<ApiResponse<void>> {
@@ -66,8 +93,20 @@ export const authApi = {
   },
 
   async logout(): Promise<ApiResponse<void>> {
-    await delay(300);
-    return { success: true };
+    try {
+      const response = await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const data = await response.json();
+      return { success: data.success || true };
+    } catch (error) {
+      // Even if request fails, logout should succeed (client-side cleanup)
+      return { success: true };
+    }
   },
 
   async forgotPassword(_email: string): Promise<ApiResponse<void>> {
@@ -159,9 +198,6 @@ export const authApi = {
     });
   },
 };
-
-// API base URL - defaults to localhost:3001 for development
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
 
 /**
  * Chat API - Connected to Neon Database
