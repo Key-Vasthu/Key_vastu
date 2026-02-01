@@ -78,11 +78,20 @@ export const authApi = {
         data: data.data,
         message: data.message || 'Registration successful!',
       };
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
+      
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        return {
+          success: false,
+          error: 'Cannot connect to server. Please check your internet connection and try again.',
+        };
+      }
+      
       return {
         success: false,
-        error: 'Network error. Please check your connection and try again.',
+        error: error.message || 'Network error. Please check your connection and try again.',
       };
     }
   },

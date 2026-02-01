@@ -94,15 +94,17 @@ const Register: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      const success = await register(formData.email, formData.password, formData.name, formData.phone);
+      const result = await register(formData.email, formData.password, formData.name, formData.phone);
       
-      if (success) {
+      if (result.success) {
         setIsSuccess(true);
         addNotification('success', 'Registration Successful!', 'Your account has been created. You can now login.');
       } else {
-        addNotification('error', 'Registration Failed', 'Email may already be in use. Please try again.');
+        const errorMessage = result.error || 'Registration failed. Please try again.';
+        addNotification('error', 'Registration Failed', errorMessage);
       }
-    } catch {
+    } catch (error) {
+      console.error('Registration error:', error);
       addNotification('error', 'Error', 'Something went wrong. Please try again later.');
     } finally {
       setIsSubmitting(false);

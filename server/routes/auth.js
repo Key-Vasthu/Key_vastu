@@ -83,9 +83,26 @@ router.post('/register', async (req, res) => {
     });
   } catch (error) {
     console.error('Registration error:', error);
+    
+    // Check for unique constraint violation (duplicate email)
+    if (error.code === '23505' || error.message?.includes('duplicate key') || error.message?.includes('unique constraint')) {
+      return res.status(409).json({
+        success: false,
+        error: 'Email already registered. Please use a different email or login.',
+      });
+    }
+    
+    // Check for other database errors
+    if (error.code && error.code.startsWith('23')) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid data provided. Please check your information and try again.',
+      });
+    }
+    
     res.status(500).json({
       success: false,
-      error: 'Registration failed. Please try again later.',
+      error: error.message || 'Registration failed. Please try again later.',
     });
   }
 });

@@ -2,9 +2,14 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import type { User, AuthState } from '../types';
 import { authApi } from '../utils/api';
 
+interface RegisterResult {
+  success: boolean;
+  error?: string;
+}
+
 interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<boolean>;
-  register: (email: string, password: string, name: string, phone?: string) => Promise<boolean>;
+  register: (email: string, password: string, name: string, phone?: string) => Promise<RegisterResult>;
   logout: () => Promise<void>;
   loginAsGuest: () => void;
 }
@@ -51,13 +56,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return false;
   }, []);
 
-  const register = useCallback(async (email: string, password: string, name: string, phone?: string): Promise<boolean> => {
+  const register = useCallback(async (email: string, password: string, name: string, phone?: string): Promise<RegisterResult> => {
     setState(prev => ({ ...prev, isLoading: true }));
     
     const response = await authApi.register(email, password, name, phone);
     
     setState(prev => ({ ...prev, isLoading: false }));
-    return response.success;
+    return {
+      success: response.success,
+      error: response.error,
+    };
   }, []);
 
   const logout = useCallback(async (): Promise<void> => {
