@@ -184,9 +184,14 @@ export const authApi = {
           
           // Check if it's HTML
           if (text.trim().startsWith('<!') || text.includes('<html')) {
+            const isDev = import.meta.env.DEV;
+            const startCommand = isDev 
+              ? 'npm run server (or npm run start:backend)'
+              : 'Check that your backend server is deployed and running';
+            
             return {
               success: false,
-              error: `Server returned HTML instead of JSON. This usually means the backend server is not running or the route doesn't exist. Please ensure the server is running on port 3001: npm run server`,
+              error: `Backend server is not running or returned HTML instead of JSON. ${isDev ? 'Please start the server:' : 'Please check your backend deployment.'} ${startCommand}. For Windows: .\\start-backend.ps1 or npm run start:backend`,
             };
           }
           
