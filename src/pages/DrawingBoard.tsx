@@ -104,7 +104,7 @@ const DrawingBoard: React.FC = () => {
   const [hoveredHandle, setHoveredHandle] = useState<string | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [currentPoints, setCurrentPoints] = useState<{ x: number; y: number }[]>([]);
-  const [showGrid, setShowGrid] = useState(true);
+  const [showGrid, setShowGrid] = useState(false); // Grid disabled by default for plain drawing
   // Panning state (using refs for event handlers)
   const [isPanning] = useState(false);
   const [panStart] = useState({ x: 0, y: 0 });
