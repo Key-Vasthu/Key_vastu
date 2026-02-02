@@ -51,32 +51,35 @@ const Login: React.FC = () => {
     setIsSubmitting(true);
     
     try {
-      // Call login API directly to get error message
-      const { authApi } = await import('../utils/api');
-      const response = await authApi.login(formData.email, formData.password);
+      console.log('🔐 Attempting login:', { email: formData.email });
       
-      if (response.success && response.data) {
-        // Use the login function to set user in context
-        const success = await login(formData.email, formData.password);
+      // Use the login function from context (which calls the API)
+      const success = await login(formData.email, formData.password);
+      
+      if (success) {
+        // Get user from localStorage to check role
+        const userData = localStorage.getItem('keyvasthu_user');
+        const user = userData ? JSON.parse(userData) : null;
         
-        if (success) {
-          // Get user from localStorage to check role
-          const userData = localStorage.getItem('keyvasthu_user');
-          const user = userData ? JSON.parse(userData) : null;
-          
-          // Redirect admin to admin dashboard, others to regular dashboard
-          // Check role from database (user.role === 'admin')
-          if (user && user.role === 'admin') {
-            addNotification('success', 'Welcome Admin!', 'You have successfully logged in as administrator.');
-            navigate('/admin');
-          } else {
-            addNotification('success', 'Welcome back!', 'You have successfully logged in.');
-            navigate('/dashboard');
-          }
+        console.log('✅ Login successful, user:', user);
+        
+        // Redirect admin to admin dashboard, others to regular dashboard
+        // Check role from database (user.role === 'admin')
+        if (user && user.role === 'admin') {
+          addNotification('success', 'Welcome Admin!', 'You have successfully logged in as administrator.');
+          navigate('/admin');
+        } else {
+          addNotification('success', 'Welcome back!', 'You have successfully logged in.');
+          navigate('/dashboard');
         }
       } else {
+        // Get the error from the API response
+        const { authApi } = await import('../utils/api');
+        const response = await authApi.login(formData.email, formData.password);
+        
         // Show the actual error message from the API
-        const errorMessage = response.error || 'Invalid email or password. Please try again.';
+        const errorMessage = response.error || 'Invalid email or password. Please check your credentials and try again.';
+        console.error('❌ Login failed:', errorMessage);
         addNotification('error', 'Login failed', errorMessage);
       }
     } catch (error: any) {

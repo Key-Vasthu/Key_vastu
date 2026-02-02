@@ -202,8 +202,6 @@ export const authApi = {
         };
       }
 
-      const data = await response.json();
-
       if (!response.ok) {
         return {
           success: false,

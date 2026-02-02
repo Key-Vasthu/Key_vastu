@@ -94,18 +94,27 @@ const Register: React.FC = () => {
     setIsSubmitting(true);
     
     try {
+      console.log('📝 Attempting registration:', {
+        email: formData.email,
+        name: formData.name,
+        hasPhone: !!formData.phone
+      });
+      
       const result = await register(formData.email, formData.password, formData.name, formData.phone);
+      
+      console.log('📝 Registration result:', result);
       
       if (result.success) {
         setIsSuccess(true);
-        addNotification('success', 'Registration Successful!', 'Your account has been created. You can now login.');
+        addNotification('success', 'Registration Successful!', `Your account has been created and saved to the database. You can now login with ${formData.email}.`);
       } else {
         const errorMessage = result.error || 'Registration failed. Please try again.';
+        console.error('Registration failed:', errorMessage);
         addNotification('error', 'Registration Failed', errorMessage);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Registration error:', error);
-      addNotification('error', 'Error', 'Something went wrong. Please try again later.');
+      addNotification('error', 'Error', error.message || 'Something went wrong. Please try again later.');
     } finally {
       setIsSubmitting(false);
     }
