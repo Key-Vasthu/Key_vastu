@@ -330,24 +330,36 @@ const AdminDashboard: React.FC = () => {
     }
 
     try {
-      let coverImageUrl = bookForm.coverImage;
+      let coverImageUrl = bookForm.coverImage || '';
       
       // Upload image if file is selected
       if (coverImageFile) {
-        coverImageUrl = await handleUploadImage();
+        try {
+          coverImageUrl = await handleUploadImage();
+        } catch (error) {
+          console.error('Image upload failed, continuing without image:', error);
+          // Continue with empty string, backend will use placeholder
+        }
+      }
+
+      // Validate price is a valid number
+      const priceValue = parseFloat(bookForm.price);
+      if (isNaN(priceValue) || priceValue <= 0) {
+        addNotification('error', 'Validation Error', 'Please enter a valid price (greater than 0)');
+        return;
       }
 
       const bookData = {
-        title: bookForm.title,
-        author: bookForm.author,
-        description: bookForm.description,
-        price: parseFloat(bookForm.price),
+        title: bookForm.title.trim(),
+        author: bookForm.author.trim(),
+        description: bookForm.description.trim(),
+        price: priceValue,
         originalPrice: bookForm.originalPrice ? parseFloat(bookForm.originalPrice) : undefined,
-        coverImage: coverImageUrl,
-        category: bookForm.category,
+        coverImage: coverImageUrl, // Can be empty, backend will use placeholder
+        category: bookForm.category || 'Vasthu Shastra',
         pages: bookForm.pages ? parseInt(bookForm.pages) : undefined,
-        language: bookForm.language,
-        isbn: bookForm.isbn,
+        language: bookForm.language || 'English',
+        isbn: bookForm.isbn.trim(),
         publishedDate: bookForm.publishedDate || undefined,
         inStock: bookForm.inStock,
       };

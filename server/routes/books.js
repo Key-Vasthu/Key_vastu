@@ -90,9 +90,12 @@ router.post('/', async (req, res) => {
       reviewCount,
     } = req.body;
 
-    if (!title || !author || !price || !coverImage) {
-      return res.status(400).json({ success: false, error: 'Title, author, price, and cover image are required' });
+    if (!title || !author || !price) {
+      return res.status(400).json({ success: false, error: 'Title, author, and price are required' });
     }
+
+    // Use placeholder image if no cover image provided
+    const finalCoverImage = coverImage || 'https://via.placeholder.com/300x400?text=No+Cover+Image';
 
     const bookId = `book-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -110,7 +113,7 @@ router.post('/', async (req, res) => {
       description || '',
       price,
       originalPrice || null,
-      coverImage,
+      finalCoverImage,
       category || 'Vasthu Shastra',
       pages || null,
       language || 'English',
