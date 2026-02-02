@@ -195,10 +195,10 @@ export const authApi = {
             error: `Server returned invalid response. Status: ${response.status}. Response: ${text.substring(0, 200)}`,
           };
         }
-      } catch (error) {
+      } catch (error: any) {
         return {
           success: false,
-          error: `Failed to read server response: ${error.message}`,
+          error: `Failed to read server response: ${error?.message || error?.toString() || 'Unknown error'}`,
         };
       }
 
