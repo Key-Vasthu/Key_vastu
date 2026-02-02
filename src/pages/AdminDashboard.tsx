@@ -256,7 +256,7 @@ const AdminDashboard: React.FC = () => {
         publishedDate: book.publishedDate || '',
         inStock: book.inStock,
       });
-      setCoverImagePreview(book.coverImage);
+      setCoverImagePreview(book.coverImage || '');
     } else {
       setSelectedBook(null);
       setBookForm({
@@ -274,8 +274,8 @@ const AdminDashboard: React.FC = () => {
         inStock: true,
       });
       setCoverImagePreview('');
-      setCoverImageFile(null);
     }
+    setCoverImageFile(null);
     setIsBookModalOpen(true);
   };
 
