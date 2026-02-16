@@ -158,13 +158,6 @@ const Dashboard: React.FC = () => {
             <div className="h-px bg-earth-200"></div>
           </motion.div>
 
-          {/* Action Button */}
-          <div className="mb-6">
-            <Button variant="primary" size="lg">
-              Action (Click)
-            </Button>
-          </div>
-
           {/* Project Type Selector - Two Cards */}
           <div className="grid md:grid-cols-2 gap-6 max-w-5xl">
             {/* Existing House Card */}
@@ -175,19 +168,40 @@ const Dashboard: React.FC = () => {
               className="cursor-pointer"
             >
               <Card className="relative overflow-hidden border-2 border-transparent hover:border-saffron-400 transition-all duration-300 group h-full">
-                <div className="relative p-6">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-16 h-16 bg-saffron-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Home className="w-8 h-8 text-saffron-600" />
+                <div className="relative p-8">
+                  <div className="flex items-start gap-4 mb-6">
+                    <div className="w-20 h-20 bg-gradient-to-br from-saffron-500 to-saffron-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <Home className="w-10 h-10 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-display font-bold text-astral-500 mb-2">
+                      <h3 className="text-2xl font-display font-bold text-astral-500 mb-3">
                         Existing House
                       </h3>
+                      <p className="text-earth-600 mb-4">
+                        I already own a property and want to analyze its Vasthu alignment, get remedies, and optimize energy flow.
+                      </p>
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center gap-2 text-sm text-earth-600">
+                          <CheckCircle size={16} className="text-green-500" />
+                          <span>Upload floor plans & building drawings</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-earth-600">
+                          <CheckCircle size={16} className="text-green-500" />
+                          <span>Get detailed Vasthu analysis & remedies</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-earth-600">
+                          <CheckCircle size={16} className="text-green-500" />
+                          <span>Annotate plans on drawing board</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-earth-600">
+                          <CheckCircle size={16} className="text-green-500" />
+                          <span>Live consultation with expert</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="absolute bottom-4 right-4">
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" className="text-saffron-600 hover:text-saffron-700">
                       Action (Click)
                     </Button>
                   </div>
@@ -203,19 +217,40 @@ const Dashboard: React.FC = () => {
               className="cursor-pointer"
             >
               <Card className="relative overflow-hidden border-2 border-transparent hover:border-astral-400 transition-all duration-300 group h-full">
-                <div className="relative p-6">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-16 h-16 bg-astral-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <Search className="w-8 h-8 text-astral-500" />
+                <div className="relative p-8">
+                  <div className="flex items-start gap-4 mb-6">
+                    <div className="w-20 h-20 bg-gradient-to-br from-astral-500 to-astral-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                      <Search className="w-10 h-10 text-white" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-xl font-display font-bold text-astral-500 mb-2">
+                      <h3 className="text-2xl font-display font-bold text-astral-500 mb-3">
                         Plan To Buy
                       </h3>
+                      <p className="text-earth-600 mb-4">
+                        I'm planning to purchase a property and want to evaluate its Vasthu compliance before making a decision.
+                      </p>
+                      <div className="space-y-2 mb-4">
+                        <div className="flex items-center gap-2 text-sm text-earth-600">
+                          <CheckCircle size={16} className="text-green-500" />
+                          <span>Upload prospective property plans</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-earth-600">
+                          <CheckCircle size={16} className="text-green-500" />
+                          <span>Pre-purchase Vasthu assessment</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-earth-600">
+                          <CheckCircle size={16} className="text-green-500" />
+                          <span>Compare multiple properties</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-earth-600">
+                          <CheckCircle size={16} className="text-green-500" />
+                          <span>Download detailed reports</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   <div className="absolute bottom-4 right-4">
-                    <Button variant="ghost" size="sm">
+                    <Button variant="ghost" size="sm" className="text-astral-500 hover:text-astral-600">
                       Action (Click)
                     </Button>
                   </div>
@@ -227,6 +262,35 @@ const Dashboard: React.FC = () => {
       </div>
     </div>
   );
+};
+
+// Helper functions for use in sub-components
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'reviewed':
+    case 'analyzed':
+      return 'success' as const;
+    case 'in_review':
+      return 'warning' as const;
+    case 'pending':
+      return 'neutral' as const;
+    default:
+      return 'neutral' as const;
+  }
+};
+
+const getStatusIcon = (status: string) => {
+  switch (status) {
+    case 'reviewed':
+    case 'analyzed':
+      return <CheckCircle size={14} />;
+    case 'in_review':
+      return <Clock size={14} />;
+    case 'pending':
+      return <AlertCircle size={14} />;
+    default:
+      return null;
+  }
 };
 
 // Existing House Dashboard Component (kept for potential future use)

@@ -108,14 +108,6 @@ const Header: React.FC = () => {
     { to: '/about', icon: <Info size={18} />, label: 'About' },
   ];
 
-  /* ===== AUTH NAVIGATION (Visible Only After Login) ===== */
-  const authNavLinks = isAuthenticated
-    ? [
-        { to: '/chat', icon: <MessageCircle size={18} />, label: 'Chat' },
-        { to: '/drawing-board', icon: <PenTool size={18} />, label: 'Drawing' },
-      ]
-    : [];
-
   const handleLogout = async () => {
     await logout();
     setIsProfileDropdownOpen(false);
@@ -159,10 +151,6 @@ const Header: React.FC = () => {
             {mainNavLinks.map((link) => (
               <NavLink key={link.to} {...link} />
             ))}
-
-            {authNavLinks.map((link) => (
-              <NavLink key={link.to} {...link} />
-            ))}
           </nav>
 
           {/* RIGHT SIDE */}
@@ -183,53 +171,25 @@ const Header: React.FC = () => {
 
             {/* PROFILE / LOGIN */}
             {isAuthenticated ? (
-              <div className="relative" ref={profileDropdownRef}>
-                <button
-                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                  className="flex items-center gap-2 px-3 py-2 text-earth-600 hover:text-saffron-600 hover:bg-saffron-50 rounded-lg transition-all"
-                >
-                  <div className="w-8 h-8 bg-gradient-to-br from-saffron-400 to-gold-500 rounded-full flex items-center justify-center text-white font-medium text-sm">
+              <div className="flex items-center gap-4">
+                {/* User Profile Section */}
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-saffron-400 to-gold-500 rounded-full flex items-center justify-center text-white font-medium text-sm">
                     {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
-                  <span className="hidden sm:block font-medium">
-                    {user?.name?.split(' ')[0]}
+                  <span className="hidden sm:block font-medium text-earth-700">
+                    {user?.name || 'User'}
                   </span>
-                  <ChevronDown size={16} />
+                </div>
+
+                {/* Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all font-medium"
+                >
+                  <LogOut size={18} />
+                  <span className="hidden sm:inline">Logout</span>
                 </button>
-
-                <AnimatePresence>
-                  {isProfileDropdownOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-earth-100"
-                    >
-                      <div className="p-4 border-b border-earth-100">
-                        <p className="font-medium">{user?.name}</p>
-                        <p className="text-sm text-earth-500">{user?.email}</p>
-                      </div>
-
-                      <div className="p-2">
-                        <Link
-                          to="/profile"
-                          className="flex items-center gap-3 px-3 py-2 hover:bg-saffron-50 rounded-lg"
-                        >
-                          <User size={18} />
-                          Profile
-                        </Link>
-
-                        <button
-                          onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
-                        >
-                          <LogOut size={18} />
-                          Sign Out
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
             ) : (
               <Link to="/login" className="btn-primary flex items-center gap-2 !py-2">
@@ -260,7 +220,7 @@ const Header: React.FC = () => {
             className="lg:hidden border-t border-earth-100 bg-white"
           >
             <nav className="px-4 py-4 space-y-1">
-              {[...mainNavLinks, ...authNavLinks].map((link) => (
+              {mainNavLinks.map((link) => (
                 <NavLink
                   key={link.to}
                   {...link}
