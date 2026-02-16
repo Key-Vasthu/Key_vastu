@@ -205,7 +205,6 @@ const Dashboard: React.FC = () => {
               </Card>
             </motion.div>
           </div>
-        </div>
       </div>
     </div>
   );
