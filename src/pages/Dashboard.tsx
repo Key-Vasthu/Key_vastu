@@ -229,37 +229,7 @@ const Dashboard: React.FC = () => {
   );
 };
 
-// Helper functions defined at component level for use in sub-components
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'reviewed':
-    case 'analyzed':
-      return 'success' as const;
-    case 'in_review':
-      return 'warning' as const;
-    case 'pending':
-      return 'neutral' as const;
-    default:
-      return 'neutral' as const;
-  }
-};
-
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case 'reviewed':
-    case 'analyzed':
-      return <CheckCircle size={14} />;
-    case 'in_review':
-      return <Clock size={14} />;
-    case 'pending':
-      return <AlertCircle size={14} />;
-    default:
-      return null;
-  }
-};
-
-
-// Existing House Dashboard Component
+// Existing House Dashboard Component (kept for potential future use)
 interface ExistingHouseDashboardProps {
   data: typeof existingHouseData;
   threads: ChatThread[];
@@ -566,35 +536,6 @@ const PlanToBuyDashboard: React.FC<PlanToBuyDashboardProps> = ({ data }) => {
       </Card>
     </div>
   );
-};
-
-// Helper functions defined at component level for use in sub-components
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'reviewed':
-    case 'analyzed':
-      return 'success' as const;
-    case 'in_review':
-      return 'warning' as const;
-    case 'pending':
-      return 'neutral' as const;
-    default:
-      return 'neutral' as const;
-  }
-};
-
-const getStatusIcon = (status: string) => {
-  switch (status) {
-    case 'reviewed':
-    case 'analyzed':
-      return <CheckCircle size={14} />;
-    case 'in_review':
-      return <Clock size={14} />;
-    case 'pending':
-      return <AlertCircle size={14} />;
-    default:
-      return null;
-  }
 };
 
 export default Dashboard;
