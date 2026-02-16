@@ -79,6 +79,7 @@ const Dashboard: React.FC = () => {
 
   const handleProjectSelect = (type: ProjectType) => {
     if (type === 'existing') {
+      // Redirect to chat page - file upload is already enabled there
       window.location.href = '/chat';
     } else if (type === 'planning') {
       window.location.href = '/drawing-board';
@@ -90,25 +91,24 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-earth-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-cream-50 via-earth-50 to-gold-50 flex relative overflow-hidden">
+      {/* Vastu Background Pattern */}
+      <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='vastu' x='0' y='0' width='200' height='200' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='100' cy='100' r='80' fill='none' stroke='%23d4a418' stroke-width='2'/%3E%3Ccircle cx='100' cy='100' r='50' fill='none' stroke='%23d4a418' stroke-width='1'/%3E%3Cline x1='100' y1='20' x2='100' y2='180' stroke='%23d4a418' stroke-width='1'/%3E%3Cline x1='20' y1='100' x2='180' y2='100' stroke='%23d4a418' stroke-width='1'/%3E%3Cline x1='35' y1='35' x2='165' y2='165' stroke='%23d4a418' stroke-width='0.5'/%3E%3Cline x1='165' y1='35' x2='35' y2='165' stroke='%23d4a418' stroke-width='0.5'/%3E%3Ctext x='100' y='30' font-family='Arial' font-size='16' fill='%23d4a418' text-anchor='middle'%3EN%3C/text%3E%3Ctext x='100' y='190' font-family='Arial' font-size='16' fill='%23d4a418' text-anchor='middle'%3ES%3C/text%3E%3Ctext x='30' y='110' font-family='Arial' font-size='16' fill='%23d4a418' text-anchor='middle'%3EW%3C/text%3E%3Ctext x='170' y='110' font-family='Arial' font-size='16' fill='%23d4a418' text-anchor='middle'%3EE%3C/text%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23vastu)'/%3E%3C/svg%3E")`,
+          backgroundSize: '400px 400px',
+          backgroundPosition: 'center',
+        }}></div>
+      </div>
+
+      {/* Decorative Elements */}
+      <div className="absolute top-20 right-20 w-96 h-96 bg-saffron-100 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      <div className="absolute bottom-20 left-20 w-96 h-96 bg-astral-100 rounded-full blur-3xl opacity-20 pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gold-50 rounded-full blur-3xl opacity-10 pointer-events-none"></div>
+
       {/* Left Sidebar */}
-      <aside className="w-64 bg-white border-r border-earth-200 flex-shrink-0 hidden lg:block">
-        <div className="p-6 border-b border-earth-200">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-saffron-400 to-gold-500 rounded-full flex items-center justify-center text-white font-medium text-sm">
-              {user?.name?.charAt(0).toUpperCase() || 'U'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <input
-                type="text"
-                value={user?.name || ''}
-                readOnly
-                className="w-full px-3 py-2 text-sm border border-earth-200 rounded-lg bg-earth-50 text-earth-700"
-                placeholder="Your name"
-              />
-            </div>
-          </div>
-        </div>
+      <aside className="w-64 bg-white/80 backdrop-blur-md border-r border-earth-200/50 flex-shrink-0 hidden lg:block relative z-10 shadow-lg">
+       
 
         <nav className="p-4 space-y-2">
           <Link
@@ -143,66 +143,85 @@ const Dashboard: React.FC = () => {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col relative z-10">
         <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8">
           {/* Welcome Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8"
+            className="mb-8 relative"
           >
-            <h1 className="text-3xl font-display font-bold text-astral-500 mb-2">
-              Hello {user?.name?.split(' ')[0] || 'User'}
-            </h1>
-            <div className="h-px bg-earth-200 mb-2"></div>
-            <div className="h-px bg-earth-200"></div>
+            <div className="relative inline-block">
+              <h1 className="text-4xl md:text-5xl font-display font-bold text-astral-500 mb-3 relative z-10">
+                Hello {user?.name?.split(' ')[0] || 'User'}
+              </h1>
+              <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-saffron-400 via-gold-400 to-saffron-400 rounded-full opacity-60"></div>
+            </div>
+            <p className="text-earth-600 mt-4 text-lg">Welcome to your Vasthu journey. Choose your path below.</p>
           </motion.div>
 
           {/* Project Type Selector - Two Cards */}
-          <div className="grid md:grid-cols-2 gap-6 max-w-5xl">
+          <div className="grid md:grid-cols-2 gap-8 max-w-6xl">
             {/* Existing House Card */}
             <motion.div
-              whileHover={{ scale: 1.02, y: -4 }}
+              whileHover={{ scale: 1.03, y: -8 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleProjectSelect('existing')}
-              className="cursor-pointer"
+              className="cursor-pointer group"
             >
-              <Card className="relative overflow-hidden border-2 border-transparent hover:border-saffron-400 transition-all duration-300 group h-full">
-                <div className="relative p-8">
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="w-20 h-20 bg-gradient-to-br from-saffron-500 to-saffron-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                      <Home className="w-10 h-10 text-white" />
+              <Card className="relative overflow-hidden border-2 border-saffron-200 hover:border-saffron-400 transition-all duration-500 group h-full bg-gradient-to-br from-white to-saffron-50/30 shadow-xl hover:shadow-2xl">
+                {/* Decorative Background Elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-saffron-200/30 to-transparent rounded-full -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-700"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-gold-100/40 to-transparent rounded-full -ml-24 -mb-24"></div>
+                
+                {/* Vastu Pattern Overlay */}
+                <div className="absolute inset-0 opacity-5 pointer-events-none">
+                  <div className="absolute inset-0" style={{
+                    backgroundImage: `radial-gradient(circle at center, #d4a418 1px, transparent 1px)`,
+                    backgroundSize: '20px 20px',
+                  }}></div>
+                </div>
+
+                <div className="relative p-8 z-10">
+                  <div className="flex items-start gap-6 mb-6">
+                    <div className="relative">
+                      <div className="w-24 h-24 bg-gradient-to-br from-saffron-500 via-saffron-600 to-saffron-700 rounded-3xl flex items-center justify-center flex-shrink-0 shadow-2xl group-hover:shadow-saffron-500/50 group-hover:scale-110 transition-all duration-500">
+                        <Home className="w-12 h-12 text-white" />
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-gold-400 rounded-full flex items-center justify-center shadow-lg">
+                        <CheckCircle className="w-5 h-5 text-white" />
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-display font-bold text-astral-500 mb-3">
+                    <div className="flex-1 pt-2">
+                      <h3 className="text-3xl font-display font-bold text-astral-500 mb-3 group-hover:text-saffron-600 transition-colors">
                         Existing House
                       </h3>
-                      <p className="text-earth-600 mb-4">
+                      <p className="text-earth-700 mb-5 leading-relaxed text-base">
                         I already own a property and want to analyze its Vasthu alignment, get remedies, and optimize energy flow.
                       </p>
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center gap-2 text-sm text-earth-600">
-                          <CheckCircle size={16} className="text-green-500" />
+                      <div className="space-y-3 mb-6">
+                        <div className="flex items-center gap-3 text-sm text-earth-700 bg-white/60 backdrop-blur-sm px-3 py-2 rounded-lg">
+                          <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
                           <span>Upload floor plans & building drawings</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-earth-600">
-                          <CheckCircle size={16} className="text-green-500" />
+                        <div className="flex items-center gap-3 text-sm text-earth-700 bg-white/60 backdrop-blur-sm px-3 py-2 rounded-lg">
+                          <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
                           <span>Get detailed Vasthu analysis & remedies</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-earth-600">
-                          <CheckCircle size={16} className="text-green-500" />
+                        <div className="flex items-center gap-3 text-sm text-earth-700 bg-white/60 backdrop-blur-sm px-3 py-2 rounded-lg">
+                          <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
                           <span>Annotate plans on drawing board</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-earth-600">
-                          <CheckCircle size={16} className="text-green-500" />
+                        <div className="flex items-center gap-3 text-sm text-earth-700 bg-white/60 backdrop-blur-sm px-3 py-2 rounded-lg">
+                          <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
                           <span>Live consultation with expert</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="absolute bottom-4 right-4">
-                    <Button variant="ghost" size="sm" className="text-saffron-600 hover:text-saffron-700">
-                      Action (Click)
+                  <div className="absolute bottom-6 right-6">
+                    <Button variant="ghost" size="sm" className="text-saffron-600 hover:text-saffron-700 hover:bg-saffron-50 font-medium">
+                      
                     </Button>
                   </div>
                 </div>
@@ -211,53 +230,71 @@ const Dashboard: React.FC = () => {
 
             {/* Plan To Buy Card */}
             <motion.div
-              whileHover={{ scale: 1.02, y: -4 }}
+              whileHover={{ scale: 1.03, y: -8 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleProjectSelect('planning')}
-              className="cursor-pointer"
+              className="cursor-pointer group"
             >
-              <Card className="relative overflow-hidden border-2 border-transparent hover:border-astral-400 transition-all duration-300 group h-full">
-                <div className="relative p-8">
-                  <div className="flex items-start gap-4 mb-6">
-                    <div className="w-20 h-20 bg-gradient-to-br from-astral-500 to-astral-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                      <Search className="w-10 h-10 text-white" />
+              <Card className="relative overflow-hidden border-2 border-astral-200 hover:border-astral-400 transition-all duration-500 group h-full bg-gradient-to-br from-white to-astral-50/30 shadow-xl hover:shadow-2xl">
+                {/* Decorative Background Elements */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-astral-200/30 to-transparent rounded-full -mr-32 -mt-32 group-hover:scale-150 transition-transform duration-700"></div>
+                <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-blue-100/40 to-transparent rounded-full -ml-24 -mb-24"></div>
+                
+                {/* Vastu Pattern Overlay */}
+                <div className="absolute inset-0 opacity-5 pointer-events-none">
+                  <div className="absolute inset-0" style={{
+                    backgroundImage: `radial-gradient(circle at center, #1e3a5f 1px, transparent 1px)`,
+                    backgroundSize: '20px 20px',
+                  }}></div>
+                </div>
+
+                <div className="relative p-8 z-10">
+                  <div className="flex items-start gap-6 mb-6">
+                    <div className="relative">
+                      <div className="w-24 h-24 bg-gradient-to-br from-astral-500 via-astral-600 to-astral-700 rounded-3xl flex items-center justify-center flex-shrink-0 shadow-2xl group-hover:shadow-astral-500/50 group-hover:scale-110 transition-all duration-500">
+                        <Search className="w-12 h-12 text-white" />
+                      </div>
+                      <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-400 rounded-full flex items-center justify-center shadow-lg">
+                        <Compass className="w-5 h-5 text-white" />
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-display font-bold text-astral-500 mb-3">
+                    <div className="flex-1 pt-2">
+                      <h3 className="text-3xl font-display font-bold text-astral-500 mb-3 group-hover:text-astral-600 transition-colors">
                         Plan To Buy
                       </h3>
-                      <p className="text-earth-600 mb-4">
+                      <p className="text-earth-700 mb-5 leading-relaxed text-base">
                         I'm planning to purchase a property and want to evaluate its Vasthu compliance before making a decision.
                       </p>
-                      <div className="space-y-2 mb-4">
-                        <div className="flex items-center gap-2 text-sm text-earth-600">
-                          <CheckCircle size={16} className="text-green-500" />
+                      <div className="space-y-3 mb-6">
+                        <div className="flex items-center gap-3 text-sm text-earth-700 bg-white/60 backdrop-blur-sm px-3 py-2 rounded-lg">
+                          <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
                           <span>Upload prospective property plans</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-earth-600">
-                          <CheckCircle size={16} className="text-green-500" />
+                        <div className="flex items-center gap-3 text-sm text-earth-700 bg-white/60 backdrop-blur-sm px-3 py-2 rounded-lg">
+                          <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
                           <span>Pre-purchase Vasthu assessment</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-earth-600">
-                          <CheckCircle size={16} className="text-green-500" />
+                        <div className="flex items-center gap-3 text-sm text-earth-700 bg-white/60 backdrop-blur-sm px-3 py-2 rounded-lg">
+                          <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
                           <span>Compare multiple properties</span>
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-earth-600">
-                          <CheckCircle size={16} className="text-green-500" />
+                        <div className="flex items-center gap-3 text-sm text-earth-700 bg-white/60 backdrop-blur-sm px-3 py-2 rounded-lg">
+                          <CheckCircle size={18} className="text-green-500 flex-shrink-0" />
                           <span>Download detailed reports</span>
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div className="absolute bottom-4 right-4">
-                    <Button variant="ghost" size="sm" className="text-astral-500 hover:text-astral-600">
-                      Action (Click)
+                  <div className="absolute bottom-6 right-6">
+                    <Button variant="ghost" size="sm" className="text-astral-500 hover:text-astral-600 hover:bg-astral-50 font-medium">
+                     
                     </Button>
                   </div>
                 </div>
               </Card>
             </motion.div>
           </div>
+        </div>
       </div>
     </div>
   );
