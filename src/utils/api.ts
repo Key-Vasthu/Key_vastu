@@ -687,18 +687,79 @@ export const ordersApi = {
  * File Upload API stubs
  */
 export const uploadApi = {
-  async uploadFile(file: File, onProgress?: (progress: number) => void): Promise<ApiResponse<{ url: string }>> {
-    // Simulate upload progress
-    for (let i = 0; i <= 100; i += 10) {
-      await delay(200);
-      onProgress?.(i);
+  async uploadFile(file: File, onProgress?: (progress: number) => void): Promise<ApiResponse<{ url: string; id?: string; name?: string; type?: string; size?: number }>> {
+    try {
+      // Create FormData for file upload
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'chat-uploads'); // Store chat files in dedicated folder
+
+      // Use XMLHttpRequest for progress tracking
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+
+        // Track upload progress
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable && onProgress) {
+            const percentComplete = Math.round((e.loaded / e.total) * 100);
+            onProgress(percentComplete);
+          }
+        });
+
+        // Handle completion
+        xhr.addEventListener('load', () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              const response = JSON.parse(xhr.responseText);
+              if (response.success && response.data) {
+                resolve({
+                  success: true,
+                  data: {
+                    url: response.data.url,
+                    id: response.data.id,
+                    name: response.data.name,
+                    type: response.data.type,
+                    size: response.data.size,
+                  },
+                  message: 'File uploaded successfully!',
+                });
+              } else {
+                reject(new Error(response.error || 'Upload failed'));
+              }
+            } catch (error) {
+              reject(new Error('Failed to parse server response'));
+            }
+          } else {
+            try {
+              const error = JSON.parse(xhr.responseText);
+              reject(new Error(error.error || `Upload failed with status ${xhr.status}`));
+            } catch {
+              reject(new Error(`Upload failed with status ${xhr.status}`));
+            }
+          }
+        });
+
+        // Handle errors
+        xhr.addEventListener('error', () => {
+          reject(new Error('Network error during file upload'));
+        });
+
+        // Handle abort
+        xhr.addEventListener('abort', () => {
+          reject(new Error('Upload was aborted'));
+        });
+
+        // Open and send request
+        xhr.open('POST', `${API_BASE_URL}/files/upload`);
+        xhr.send(formData);
+      });
+    } catch (error: any) {
+      console.error('File upload error:', error);
+      return {
+        success: false,
+        error: error.message || 'Failed to upload file. Please check if the backend server is running.',
+      };
     }
-    
-    return {
-      success: true,
-      data: { url: URL.createObjectURL(file) },
-      message: 'File uploaded successfully!',
-    };
   },
 
   async deleteFile(_fileId: string): Promise<ApiResponse<void>> {

@@ -242,13 +242,7 @@ const Header: React.FC = () => {
                             <Home size={18} />
                             <span>Dashboard</span>
                           </Link>
-                          <button
-                            onClick={handleLogout}
-                            className="w-full flex items-center gap-3 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg mt-1"
-                          >
-                            <LogOut size={18} />
-                            <span>Sign Out</span>
-                          </button>
+                         
                         </div>
                       </motion.div>
                     )}

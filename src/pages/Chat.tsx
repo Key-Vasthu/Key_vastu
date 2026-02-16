@@ -224,8 +224,10 @@ const Chat: React.FC = () => {
         
         setThreads(combinedThreads);
         
-        // Check if there's a thread param in URL
+        // Check if coming from dashboard - auto-open admin thread
+        const autoOpenAdmin = searchParams.get('autoOpenAdmin') === 'true';
         const threadId = searchParams.get('thread');
+        
         if (threadId) {
           const thread = combinedThreads.find(t => t.id === threadId);
           if (thread) {
@@ -234,6 +236,9 @@ const Chat: React.FC = () => {
             // If specified thread not found, default to maintainer thread
             setActiveThread(maintainerThread);
           }
+        } else if (autoOpenAdmin && maintainerThread) {
+          // Auto-select maintainer thread when coming from dashboard
+          setActiveThread(maintainerThread);
         } else if (maintainerThread) {
           // Auto-select maintainer thread on first load
           setActiveThread(maintainerThread);

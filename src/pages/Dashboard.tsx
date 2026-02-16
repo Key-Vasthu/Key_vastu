@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageCircle,
@@ -65,6 +65,7 @@ const planToBuyData = {
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -79,10 +80,10 @@ const Dashboard: React.FC = () => {
 
   const handleProjectSelect = (type: ProjectType) => {
     if (type === 'existing') {
-      // Redirect to chat page - file upload is already enabled there
-      window.location.href = '/chat';
+      // Redirect to chat page and ensure admin thread is opened
+      navigate('/chat?source=dashboard&autoOpenAdmin=true');
     } else if (type === 'planning') {
-      window.location.href = '/drawing-board';
+      navigate('/drawing-board');
     }
   };
 
