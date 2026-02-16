@@ -90,61 +90,8 @@ const Dashboard: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-earth-50 flex">
-      {/* Left Sidebar */}
-      <aside className="w-64 bg-white border-r border-earth-200 flex-shrink-0 hidden lg:block">
-        <div className="p-6 border-b border-earth-200">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-saffron-400 to-gold-500 rounded-full flex items-center justify-center text-white font-medium text-sm">
-              {user?.name?.charAt(0).toUpperCase() || 'U'}
-            </div>
-            <div className="flex-1 min-w-0">
-              <input
-                type="text"
-                value={user?.name || ''}
-                readOnly
-                className="w-full px-3 py-2 text-sm border border-earth-200 rounded-lg bg-earth-50 text-earth-700"
-                placeholder="Your name"
-              />
-            </div>
-          </div>
-        </div>
-
-        <nav className="p-4 space-y-2">
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-earth-700 hover:bg-saffron-50 hover:text-saffron-600 transition-colors font-medium"
-          >
-            <Home size={20} />
-            <span>Dashboard</span>
-          </Link>
-          <Link
-            to="/chat"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-earth-700 hover:bg-saffron-50 hover:text-saffron-600 transition-colors"
-          >
-            <MessageCircle size={20} />
-            <span>Chats</span>
-          </Link>
-          <Link
-            to="/cart"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-earth-700 hover:bg-saffron-50 hover:text-saffron-600 transition-colors"
-          >
-            <BookOpen size={20} />
-            <span>Orders</span>
-          </Link>
-          <Link
-            to="/drawing-board"
-            className="flex items-center gap-3 px-4 py-3 rounded-lg text-earth-700 hover:bg-saffron-50 hover:text-saffron-600 transition-colors"
-          >
-            <PenTool size={20} />
-            <span>Drawing</span>
-          </Link>
-        </nav>
-      </aside>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-earth-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Welcome Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
