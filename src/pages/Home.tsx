@@ -185,7 +185,7 @@ const HeroSection: React.FC = () => {
                 className="border-[3px] border-astral-500 text-astral-600 hover:bg-astral-50 focus-visible:ring-astral-400"
               >
                 <BookOpen size={18} className="mr-2" />
-                Explore Books
+                Explore Products
               </Button>
             </Link>
           </motion.div>
@@ -223,13 +223,7 @@ const FeaturesSection: React.FC = () => {
       color: 'text-saffron-500',
       bg: 'bg-saffron-50',
     },
-    {
-      icon: Star,
-      title: 'Astrological Guidance',
-      description: 'Personalized recommendations based on your birth chart and planetary positions for construction timing.',
-      color: 'text-gold-600',
-      bg: 'bg-gold-50',
-    },
+  
     {
       icon: MessageCircle,
       title: 'Expert Consultation',
@@ -261,8 +255,8 @@ const FeaturesSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-20 bg-cream-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 bg-cream-50 ">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8  ">
         <motion.div
           initial="hidden"
           whileInView="visible"
@@ -270,7 +264,7 @@ const FeaturesSection: React.FC = () => {
           variants={staggerContainer}
           className="text-center mb-16"
         >
-          <motion.div variants={fadeInUp} className="divider-ornate mb-6">
+          <motion.div variants={fadeInUp} className="divider-ornate mb-6 ">
             <Star className="text-gold-500" />
           </motion.div>
           <motion.h2 variants={fadeInUp} className="section-title mb-4">
@@ -344,7 +338,7 @@ const BooksSection: React.FC = () => {
             <BookOpen className="text-gold-500" />
           </motion.div>
           <motion.h2 variants={fadeInUp} className="section-title mb-4">
-            Featured Books
+            Featured Products
           </motion.h2>
           <motion.p variants={fadeInUp} className="section-subtitle">
             Explore our published works on Vasthu Shastra
@@ -388,7 +382,7 @@ const BooksSection: React.FC = () => {
         >
           <Link to="/books">
             <Button variant="outline" rightIcon={<ChevronRight size={18} />}>
-              View All Books
+              View All Products
             </Button>
           </Link>
         </motion.div>
@@ -679,75 +673,6 @@ const VasthuAstrologySection: React.FC = () => {
 };
 
 // Quick Access CTA Section
-const QuickAccessSection: React.FC = () => {
-  const quickActions = [
-    {
-      title: 'Book Consultation',
-      description: 'Schedule a session with our expert',
-      icon: MessageCircle,
-      link: '/chat',
-      color: 'from-saffron-500 to-saffron-600',
-    },
-    {
-      title: 'Drawing Board',
-      description: 'Upload and annotate floor plans',
-      icon: PenTool,
-      link: '/drawing-board',
-      color: 'from-astral-500 to-astral-600',
-    },
-    {
-      title: 'Browse Books',
-      description: 'Explore our knowledge library',
-      icon: BookOpen,
-      link: '/books',
-      color: 'from-gold-500 to-gold-600',
-    },
-    {
-      title: 'About Expert',
-      description: 'Learn about our consultant',
-      icon: Award,
-      link: '/about',
-      color: 'from-earth-500 to-earth-600',
-    },
-  ];
-
-  return (
-    <section className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={staggerContainer}
-          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
-          {quickActions.map((action) => (
-            <motion.div key={action.title} variants={fadeInUp}>
-              <Link to={action.link}>
-                <Card
-                  padding="none"
-                  className="group overflow-hidden border-2 border-earth-200"
-                  hoverable
-                >
-                  <div className={`h-2 bg-gradient-to-r ${action.color}`} />
-                  <div className="p-6">
-                    <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${action.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                      <action.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="text-base font-display font-semibold text-astral-500 mb-1 group-hover:text-saffron-600 transition-colors">
-                      {action.title}
-                    </h3>
-                    <p className="text-xs text-earth-500">{action.description}</p>
-                  </div>
-                </Card>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-};
 
 // Main Home Component
 const Home: React.FC = () => {
@@ -758,7 +683,7 @@ const Home: React.FC = () => {
       <VasthuAstrologySection />
       <BooksSection />
       <TestimonialsSection />
-      <QuickAccessSection />
+      
     </div>
   );
 };
