@@ -65,37 +65,16 @@ const planToBuyData = {
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const [threads, setThreads] = useState<ChatThread[]>([]);
-  const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedProject, setSelectedProject] = useState<ProjectType>(null);
-  const [showProjectSelector, setShowProjectSelector] = useState(true);
 
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-      const [threadsRes, activitiesRes] = await Promise.all([
-        chatApi.getThreads(),
-        dashboardApi.getRecentActivity(),
-      ]);
-      
-      if (threadsRes.success && threadsRes.data) {
-        setThreads(threadsRes.data);
-      }
-      if (activitiesRes.success && activitiesRes.data) {
-        setActivities(activitiesRes.data);
-      }
+      // Load any necessary data here if needed
       setIsLoading(false);
     };
     
     loadData();
-
-    // Check if user has a saved preference
-    const savedProject = localStorage.getItem('keyvasthu_project_type');
-    if (savedProject) {
-      setSelectedProject(savedProject as ProjectType);
-      setShowProjectSelector(false);
-    }
   }, []);
 
   const handleProjectSelect = (type: ProjectType) => {
@@ -147,7 +126,7 @@ const Dashboard: React.FC = () => {
             <span>Chats</span>
           </Link>
           <Link
-            to="/orders"
+            to="/cart"
             className="flex items-center gap-3 px-4 py-3 rounded-lg text-earth-700 hover:bg-saffron-50 hover:text-saffron-600 transition-colors"
           >
             <BookOpen size={20} />
@@ -186,83 +165,64 @@ const Dashboard: React.FC = () => {
             </Button>
           </div>
 
-        {/* Project Type Selector */}
-        <AnimatePresence mode="wait">
-          {showProjectSelector ? (
+          {/* Project Type Selector - Two Cards */}
+          <div className="grid md:grid-cols-2 gap-6 max-w-5xl">
+            {/* Existing House Card */}
             <motion.div
-              key="selector"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              className="mb-8"
+              whileHover={{ scale: 1.02, y: -4 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleProjectSelect('existing')}
+              className="cursor-pointer"
             >
-              <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-gold-100 text-gold-700 rounded-full text-sm font-medium mb-4">
-                  <Sparkles size={16} />
-                  Choose Your Path
+              <Card className="relative overflow-hidden border-2 border-transparent hover:border-saffron-400 transition-all duration-300 group h-full">
+                <div className="relative p-6">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-16 h-16 bg-saffron-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Home className="w-8 h-8 text-saffron-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-display font-bold text-astral-500 mb-2">
+                        Existing House
+                      </h3>
+                    </div>
+                  </div>
+                  <div className="absolute bottom-4 right-4">
+                    <Button variant="ghost" size="sm">
+                      Action (Click)
+                    </Button>
+                  </div>
                 </div>
-                <h2 className="text-2xl font-display font-semibold text-astral-500">
-                  What brings you to KeyVasthu today?
-                </h2>
-              </div>
+              </Card>
+            </motion.div>
 
-              <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {/* Existing House Card */}
-          <motion.div
-            whileHover={{ scale: 1.02, y: -4 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => handleProjectSelect('existing')}
-            className="cursor-pointer"
-          >
-            <Card className="relative overflow-hidden border-2 border-transparent hover:border-saffron-400 transition-all duration-300 group h-full">
-              <div className="relative p-6">
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 bg-saffron-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Home className="w-8 h-8 text-saffron-600" />
+            {/* Plan To Buy Card */}
+            <motion.div
+              whileHover={{ scale: 1.02, y: -4 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleProjectSelect('planning')}
+              className="cursor-pointer"
+            >
+              <Card className="relative overflow-hidden border-2 border-transparent hover:border-astral-400 transition-all duration-300 group h-full">
+                <div className="relative p-6">
+                  <div className="flex items-start gap-4 mb-4">
+                    <div className="w-16 h-16 bg-astral-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <Search className="w-8 h-8 text-astral-500" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="text-xl font-display font-bold text-astral-500 mb-2">
+                        Plan To Buy
+                      </h3>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-display font-bold text-astral-500 mb-2">
-                      Existing House
-                    </h3>
-                  </div>
-                </div>
-                <div className="absolute bottom-4 right-4">
-                  <Button variant="ghost" size="sm">
-                    Action (Click)
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Plan To Buy Card */}
-          <motion.div
-            whileHover={{ scale: 1.02, y: -4 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => handleProjectSelect('planning')}
-            className="cursor-pointer"
-          >
-            <Card className="relative overflow-hidden border-2 border-transparent hover:border-astral-400 transition-all duration-300 group h-full">
-              <div className="relative p-6">
-                <div className="flex items-start gap-4 mb-4">
-                  <div className="w-16 h-16 bg-astral-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Search className="w-8 h-8 text-astral-500" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-display font-bold text-astral-500 mb-2">
-                      Plan To Buy
-                    </h3>
+                  <div className="absolute bottom-4 right-4">
+                    <Button variant="ghost" size="sm">
+                      Action (Click)
+                    </Button>
                   </div>
                 </div>
-                <div className="absolute bottom-4 right-4">
-                  <Button variant="ghost" size="sm">
-                    Action (Click)
-                  </Button>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        </div>
+              </Card>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>
