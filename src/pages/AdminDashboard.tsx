@@ -1294,6 +1294,8 @@ const AdminDashboard: React.FC = () => {
                   value={bookForm.category}
                   onChange={(e) => setBookForm({ ...bookForm, category: e.target.value })}
                   className="w-full px-4 py-2 border border-earth-200 rounded-lg focus:border-saffron-500 focus:ring-0 focus:outline-none"
+                  title="Select book category"
+                  aria-label="Book category"
                 >
                   <option value="Vasthu Shastra">Vasthu Shastra</option>
                   <option value="Astrology">Astrology</option>
@@ -1354,6 +1356,8 @@ const AdminDashboard: React.FC = () => {
                         setCoverImageFile(null);
                       }}
                       className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                      aria-label="Remove image preview"
+                      title="Remove image preview"
                     >
                       <X size={14} />
                     </button>
