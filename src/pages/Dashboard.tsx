@@ -326,14 +326,13 @@ const getStatusIcon = (status: string) => {
 };
 
 // Existing House Dashboard Component (kept for potential future use)
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface ExistingHouseDashboardProps {
   data: typeof existingHouseData;
   threads: ChatThread[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ExistingHouseDashboard: React.FC<ExistingHouseDashboardProps> = ({ data }) => {
+// Component kept for future use - exported but not currently used
+export const ExistingHouseDashboard: React.FC<ExistingHouseDashboardProps> = ({ data }) => {
   return (
     <div className="space-y-6">
       {/* Project Header Card */}
