@@ -1429,6 +1429,85 @@ const AdminDashboard: React.FC = () => {
             </div>
           </form>
         </Modal>
+
+        {/* Admin Profile Details Modal */}
+        <Modal
+          isOpen={isAdminProfileModalOpen}
+          onClose={() => setIsAdminProfileModalOpen(false)}
+          title="Admin Profile Details"
+          size="md"
+        >
+          {user && (
+            <div className="p-6 space-y-6">
+              <div className="flex items-center gap-6 pb-6 border-b border-earth-200">
+                <Avatar
+                  src={user.avatar}
+                  name={user.name || 'Admin'}
+                  size="lg"
+                />
+                <div className="flex-1">
+                  <h3 className="text-2xl font-display font-bold text-astral-500 mb-1">
+                    {user.name || 'Admin'}
+                  </h3>
+                  <p className="text-earth-600 mb-2">{user.email}</p>
+                  <Badge variant="gold" size="sm">
+                    <UserCircle size={14} className="mr-1" />
+                    Administrator
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-earth-500 mb-1">User ID</label>
+                  <p className="text-earth-800 font-mono text-sm">{user.id}</p>
+                </div>
+
+                {user.phone && (
+                  <div>
+                    <label className="block text-sm font-medium text-earth-500 mb-1">Phone Number</label>
+                    <p className="text-earth-800">{user.phone}</p>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-earth-500 mb-1">Account Created</label>
+                  <p className="text-earth-800">
+                    {user.createdAt ? formatDate(user.createdAt, 'long') : 'N/A'}
+                  </p>
+                </div>
+
+                {user.lastLogin && (
+                  <div>
+                    <label className="block text-sm font-medium text-earth-500 mb-1">Last Login</label>
+                    <p className="text-earth-800">{formatDate(user.lastLogin, 'long')}</p>
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium text-earth-500 mb-1">Role</label>
+                  <Badge variant="gold" size="sm" className="capitalize">
+                    {user.role || 'admin'}
+                  </Badge>
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-earth-200">
+                <Button
+                  variant="primary"
+                  className="w-full"
+                  onClick={() => {
+                    setIsAdminProfileModalOpen(false);
+                    addNotification('info', 'Edit Profile', 'Profile editing feature coming soon!');
+                  }}
+                >
+                  <Edit size={16} className="mr-2" />
+                  Edit Profile
+                </Button>
+              </div>
+            </div>
+          )}
+        </Modal>
     </div>
   );
 };
