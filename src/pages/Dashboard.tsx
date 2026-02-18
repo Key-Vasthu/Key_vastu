@@ -24,7 +24,7 @@ import {
   User,
   UserCircle,
 } from 'lucide-react';
-import { Button, Card, Badge, Loading, Modal } from '../components/common';
+import { Button, Card, Badge, Loading } from '../components/common';
 import { useAuth } from '../contexts/AuthContext';
 import { formatDate, cn } from '../utils/helpers';
 import type { ChatThread } from '../types';
@@ -64,7 +64,6 @@ const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -108,9 +107,9 @@ const Dashboard: React.FC = () => {
       {/* Left Sidebar */}
       <aside className="w-64 bg-white/80 backdrop-blur-md border-r border-earth-200/50 flex-shrink-0 hidden lg:block relative z-10 shadow-lg">
         {/* User Profile Section */}
-        <div
-          className="p-6 border-b border-earth-200/50 cursor-pointer hover:bg-earth-50 transition-colors"
-          onClick={() => setIsProfileModalOpen(true)}
+        <Link
+          to="/profile"
+          className="p-6 border-b border-earth-200/50 cursor-pointer hover:bg-earth-50 transition-colors block"
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="w-16 h-16 bg-gradient-to-br from-saffron-400 to-gold-500 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-md">
@@ -124,7 +123,7 @@ const Dashboard: React.FC = () => {
           <Badge variant="gold" className="w-full justify-center">
             <UserCircle size={14} className="mr-1" /> Member
           </Badge>
-        </div>
+        </Link>
 
         <div className="flex-1 overflow-y-auto">
           <div className="p-4 border-b border-earth-200/50">
@@ -138,13 +137,13 @@ const Dashboard: React.FC = () => {
               <Home size={20} />
               <span>Dashboard</span>
             </Link>
-            <button
-              onClick={() => setIsProfileModalOpen(true)}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-earth-700 hover:bg-saffron-50 hover:text-saffron-600 transition-colors"
+            <Link
+              to="/profile"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-earth-700 hover:bg-saffron-50 hover:text-saffron-600 transition-colors"
             >
               <User size={20} />
               <span>Profile</span>
-            </button>
+            </Link>
             <Link
               to="/chat"
               className="flex items-center gap-3 px-4 py-3 rounded-lg text-earth-700 hover:bg-saffron-50 hover:text-saffron-600 transition-colors"
@@ -324,91 +323,6 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* User Profile Modal */}
-      <Modal
-        isOpen={isProfileModalOpen}
-        onClose={() => setIsProfileModalOpen(false)}
-        title="User Profile Details"
-        size="md"
-      >
-        {user && (
-          <div className="p-6 space-y-6">
-            <div className="flex items-center gap-6 pb-6 border-b border-earth-200">
-              <div className="w-20 h-20 bg-gradient-to-br from-saffron-400 to-gold-500 rounded-full flex items-center justify-center text-white font-bold text-2xl shadow-md">
-                {user.name?.charAt(0).toUpperCase() || 'U'}
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-display font-bold text-astral-500 mb-1">
-                  {user.name || 'User'}
-                </h3>
-                <p className="text-earth-600 mb-2">{user.email}</p>
-                <Badge variant="gold" size="sm">
-                  <UserCircle size={14} className="mr-1" />
-                  Member
-                </Badge>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm font-medium text-earth-500 mb-1">User ID</p>
-                  <p className="text-earth-700 font-mono text-sm">{user.id}</p>
-                </div>
-                {user.phone && (
-                  <div>
-                    <p className="text-sm font-medium text-earth-500 mb-1">Phone</p>
-                    <p className="text-earth-700">{user.phone}</p>
-                  </div>
-                )}
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-earth-500 mb-1">Email Address</p>
-                <p className="text-earth-700">{user.email}</p>
-              </div>
-
-              <div>
-                <p className="text-sm font-medium text-earth-500 mb-1">Account Created</p>
-                <p className="text-earth-700">{formatDate(user.createdAt, 'long')}</p>
-              </div>
-
-              {user.lastLogin && (
-                <div>
-                  <p className="text-sm font-medium text-earth-500 mb-1">Last Login</p>
-                  <p className="text-earth-700">{formatDate(user.lastLogin, 'long')}</p>
-                </div>
-              )}
-
-              <div>
-                <p className="text-sm font-medium text-earth-500 mb-1">Account Role</p>
-                <Badge variant={user.role === 'admin' ? 'gold' : 'neutral'} className="capitalize">
-                  {user.role || 'user'}
-                </Badge>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4 border-t border-earth-200">
-              <Button
-                variant="outline"
-                onClick={() => setIsProfileModalOpen(false)}
-              >
-                Close
-              </Button>
-              <Button
-                variant="primary"
-                onClick={() => {
-                  setIsProfileModalOpen(false);
-                  navigate('/profile');
-                }}
-              >
-                Edit Profile
-              </Button>
-            </div>
-          </div>
-        )}
-      </Modal>
     </div>
   );
 };
