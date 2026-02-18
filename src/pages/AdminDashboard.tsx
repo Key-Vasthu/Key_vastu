@@ -136,8 +136,6 @@ const AdminDashboard: React.FC = () => {
   const [isAdminProfileModalOpen, setIsAdminProfileModalOpen] = useState(false);
 
   useEffect(() => {
-    let isInitialLoad = true;
-    
     const loadData = async (isInitial = false) => {
       // Only show loading spinner on initial load
       if (isInitial) {
