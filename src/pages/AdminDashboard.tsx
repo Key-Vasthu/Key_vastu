@@ -945,68 +945,8 @@ const AdminDashboard: React.FC = () => {
         </div>
       </div>
 
-        {/* Stats Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-        >
-          <StatCard
-            title="Total Users"
-            value={stats?.totalUsers || 0}
-            icon={Users}
-            color="bg-saffron-500"
-          />
-          <StatCard
-            title="Active Chats"
-            value={stats?.activeChats || 0}
-            icon={MessageCircle}
-            color="bg-astral-500"
-          />
-          <StatCard
-            title="Chatting Members"
-            value={stats?.chattingMembers || 0}
-            icon={UserCheck}
-            color="bg-gold-500"
-          />
-          <StatCard
-            title="Total Orders"
-            value={stats?.totalOrders || 0}
-            icon={ShoppingBag}
-            color="bg-green-500"
-          />
-        </motion.div>
-
-        {/* Second Stats Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
-        >
-          <StatCard
-            title="Members with Orders"
-            value={stats?.membersWithOrders || 0}
-            icon={BookOpen}
-            color="bg-purple-500"
-          />
-          <StatCard
-            title="Total Revenue"
-            value={formatCurrency(stats?.revenue || 0)}
-            icon={DollarSign}
-            color="bg-green-500"
-          />
-          <StatCard
-            title="Pending Reviews"
-            value={stats?.pendingReviews || 0}
-            icon={FileText}
-            color="bg-gold-500"
-          />
-        </motion.div>
-
-
-        {/* Order Detail Modal */}
+      {/* Modals */}
+      {/* Order Detail Modal */}
         <Modal
           isOpen={isOrderModalOpen}
           onClose={() => setIsOrderModalOpen(false)}
