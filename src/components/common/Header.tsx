@@ -232,7 +232,7 @@ const Header: React.FC = () => {
                             <span>View Profile</span>
                           </Link>
                           <Link
-                            to="/dashboard"
+                            to={user?.role === 'admin' ? "/admin" : "/dashboard"}
                             onClick={() => setIsProfileDropdownOpen(false)}
                             className="flex items-center gap-3 px-3 py-2 hover:bg-saffron-50 rounded-lg text-earth-700"
                           >

@@ -135,6 +135,7 @@ const AdminDashboard: React.FC = () => {
   });
   const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
   const [coverImagePreview, setCoverImagePreview] = useState<string>('');
+  const [isAdminProfileModalOpen, setIsAdminProfileModalOpen] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -830,8 +831,11 @@ const AdminDashboard: React.FC = () => {
       {/* Left Sidebar */}
       <aside className="w-64 bg-white/80 backdrop-blur-md border-r border-earth-200/50 flex-shrink-0 hidden lg:block relative z-10 shadow-lg flex flex-col">
         {/* Admin Profile Section */}
-        <div className="p-6 border-b border-earth-200/50">
-          <div className="flex items-center gap-3 mb-4">
+        <button
+          onClick={() => setIsAdminProfileModalOpen(true)}
+          className="w-full p-6 border-b border-earth-200/50 hover:bg-earth-50/50 transition-colors text-left"
+        >
+          <div className="flex items-center gap-3">
             <Avatar
               src={user?.avatar}
               name={user?.name || 'Admin'}
@@ -846,32 +850,7 @@ const AdminDashboard: React.FC = () => {
               </Badge>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="flex-1"
-              onClick={() => {
-                // Navigate to profile settings if available
-                addNotification('info', 'Settings', 'Profile settings coming soon!');
-              }}
-            >
-              <Settings size={14} className="mr-1" />
-              Settings
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={async () => {
-                await logout();
-                addNotification('success', 'Logged Out', 'You have been logged out successfully.');
-              }}
-              className="text-red-500 hover:text-red-600 hover:bg-red-50"
-            >
-              <LogOut size={14} />
-            </Button>
-          </div>
-        </div>
+        </button>
 
         {/* Navigation Section */}
         <div className="flex-1 overflow-y-auto">
