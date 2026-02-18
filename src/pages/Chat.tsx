@@ -1016,9 +1016,10 @@ const Chat: React.FC = () => {
                             setShowAttachMenu(false);
                           }}
                           className="w-full flex items-center gap-3 px-3 py-2 text-earth-700 hover:bg-earth-50 rounded-lg transition-colors"
+                          title="Upload Vastu plan images (JPG, PNG, etc.)"
                         >
                           <Image size={18} className="text-gold-500" />
-                          Image
+                          Vastu Plan Image
                         </button>
                         <button
                           type="button"
@@ -1027,9 +1028,10 @@ const Chat: React.FC = () => {
                             setShowAttachMenu(false);
                           }}
                           className="w-full flex items-center gap-3 px-3 py-2 text-earth-700 hover:bg-earth-50 rounded-lg transition-colors"
+                          title="Upload Vastu plans (PDF, DWG, DXF files)"
                         >
                           <FileText size={18} className="text-astral-500" />
-                          Document
+                          Vastu Plan Document
                         </button>
                         <Link
                           to="/drawing-board"
@@ -1050,7 +1052,8 @@ const Chat: React.FC = () => {
                   onChange={handleFileUpload}
                   className="hidden"
                   multiple
-                  accept="image/*,.pdf,.doc,.docx,.dwg,.dxf"
+                  accept="image/*,.pdf,.doc,.docx,.dwg,.dxf,.jpg,.jpeg,.png,.gif,.bmp,.tiff"
+                  title="Upload Vastu plans (images, PDFs, DWG, DXF files)"
                 />
 
                 {/* Message input */}
