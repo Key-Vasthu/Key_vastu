@@ -84,8 +84,11 @@ interface MemberWithOrders {
   lastOrderDate: string;
 }
 
+type AdminSection = 'communications' | 'orders' | 'members' | 'books' | 'users';
+
 const AdminDashboard: React.FC = () => {
   const { addNotification } = useNotification();
+  const [activeSection, setActiveSection] = useState<AdminSection>('communications');
   const [stats, setStats] = useState<any>(null);
   const [users, setUsers] = useState<User[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -419,206 +422,75 @@ const AdminDashboard: React.FC = () => {
     return <Loading fullScreen text="Loading admin panel..." />;
   }
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-earth-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="text-3xl font-display font-bold text-astral-500">Admin Panel</h1>
-          <p className="text-earth-500 mt-1">Manage users, orders, books, and client communications</p>
-        </motion.div>
-
-        {/* Stats Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-        >
-          <StatCard
-            title="Total Users"
-            value={stats?.totalUsers || 0}
-            icon={Users}
-            color="bg-saffron-500"
-          />
-          <StatCard
-            title="Active Chats"
-            value={stats?.activeChats || 0}
-            icon={MessageCircle}
-            color="bg-astral-500"
-          />
-          <StatCard
-            title="Chatting Members"
-            value={stats?.chattingMembers || 0}
-            icon={UserCheck}
-            color="bg-gold-500"
-          />
-          <StatCard
-            title="Total Orders"
-            value={stats?.totalOrders || 0}
-            icon={ShoppingBag}
-            color="bg-green-500"
-          />
-        </motion.div>
-
-        {/* Second Stats Row */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
-        >
-          <StatCard
-            title="Members with Orders"
-            value={stats?.membersWithOrders || 0}
-            icon={BookOpen}
-            color="bg-purple-500"
-          />
-          <StatCard
-            title="Total Revenue"
-            value={formatCurrency(stats?.revenue || 0)}
-            icon={DollarSign}
-            color="bg-green-500"
-          />
-          <StatCard
-            title="Pending Reviews"
-            value={stats?.pendingReviews || 0}
-            icon={FileText}
-            color="bg-gold-500"
-          />
-        </motion.div>
-
-        <div className="grid lg:grid-cols-2 gap-6 mb-6">
-          {/* Active Chat Threads */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
-                  <MessageCircle className="text-saffron-500" />
-                  Client Communications
-                </h2>
-                <Link to="/chat">
-                  <Button variant="ghost" size="sm">View All</Button>
-                </Link>
-              </div>
-
-              <div className="space-y-3">
-                {chatThreads.length === 0 ? (
-                  <div className="text-center py-8">
-                    <MessageCircle className="w-12 h-12 text-earth-300 mx-auto mb-3" />
-                    <p className="text-earth-500">No active conversations</p>
-                  </div>
-                ) : (
-                  chatThreads.slice(0, 5).map((thread) => (
-                    <div
-                      key={thread.id}
-                      onClick={() => {
-                        setSelectedThread(thread);
-                        setIsChatModalOpen(true);
-                        loadThreadMessages(thread.id);
-                      }}
-                      className="flex items-center gap-4 p-4 bg-earth-50 rounded-xl hover:bg-earth-100 transition-colors cursor-pointer"
-                    >
-                      <Avatar
-                        src={thread.clientAvatar}
-                        name={thread.clientName}
-                        showOnlineStatus
-                        isOnline={thread.isOnline}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <h3 className="font-medium text-earth-800 truncate">{thread.clientName}</h3>
-                          {thread.unreadCount > 0 && (
-                            <Badge variant="saffron" size="sm">{thread.unreadCount} new</Badge>
-                          )}
-                        </div>
-                        <p className="text-sm text-earth-500 truncate">{thread.lastMessage || 'No messages yet'}</p>
-                        <p className="text-xs text-earth-400 mt-1">
-                          {thread.messageCount} messages • {formatDate(thread.updatedAt, 'relative')}
-                        </p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Members with Orders */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25 }}
-          >
-            <Card>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
-                  <ShoppingBag className="text-saffron-500" />
-                  Members with Orders
-                </h2>
-                <Badge variant="gold" size="sm">{membersWithOrders.length} members</Badge>
-              </div>
-
-              <div className="space-y-3 max-h-96 overflow-y-auto">
-                {membersWithOrders.length === 0 ? (
-                  <div className="text-center py-8">
-                    <ShoppingBag className="w-12 h-12 text-earth-300 mx-auto mb-3" />
-                    <p className="text-earth-500">No members have placed orders yet</p>
-                  </div>
-                ) : (
-                  membersWithOrders.map((member) => (
-                    <div key={member.id} className="flex items-center gap-4 p-4 bg-earth-50 rounded-xl">
-                      <Avatar src={member.avatar} name={member.name} />
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-earth-800 truncate">{member.name}</h3>
-                        <p className="text-sm text-earth-500 truncate">{member.email}</p>
-                        <div className="flex items-center gap-4 mt-2">
-                          <span className="text-xs text-earth-600">
-                            {member.orderCount} {member.orderCount === 1 ? 'order' : 'orders'}
-                          </span>
-                          <span className="text-xs font-semibold text-saffron-600">
-                            {formatCurrency(member.totalSpent)} spent
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs text-earth-500">Last order</p>
-                        <p className="text-xs text-earth-600">{formatDate(member.lastOrderDate, 'relative')}</p>
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Orders List */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-6"
-        >
+  // Render content based on active section
+  const renderSectionContent = () => {
+    switch (activeSection) {
+      case 'communications':
+        return (
           <Card>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
-                <BookOpen className="text-saffron-500" />
+                <MessageCircle className="text-saffron-500" />
+                Client Communications
+              </h2>
+              <Link to="/chat">
+                <Button variant="ghost" size="sm">View All</Button>
+              </Link>
+            </div>
+            <div className="space-y-3">
+              {chatThreads.length === 0 ? (
+                <div className="text-center py-12">
+                  <MessageCircle className="w-16 h-16 text-earth-300 mx-auto mb-4" />
+                  <p className="text-earth-500">No active conversations</p>
+                </div>
+              ) : (
+                chatThreads.map((thread) => (
+                  <div
+                    key={thread.id}
+                    onClick={() => {
+                      setSelectedThread(thread);
+                      setIsChatModalOpen(true);
+                      loadThreadMessages(thread.id);
+                    }}
+                    className="flex items-center gap-4 p-4 bg-earth-50 rounded-xl hover:bg-earth-100 transition-colors cursor-pointer"
+                  >
+                    <Avatar
+                      src={thread.clientAvatar}
+                      name={thread.clientName}
+                      showOnlineStatus
+                      isOnline={thread.isOnline}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <h3 className="font-medium text-earth-800 truncate">{thread.clientName}</h3>
+                        {thread.unreadCount > 0 && (
+                          <Badge variant="saffron" size="sm">{thread.unreadCount} new</Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-earth-500 truncate">{thread.lastMessage || 'No messages yet'}</p>
+                      <p className="text-xs text-earth-400 mt-1">
+                        {thread.messageCount} messages • {formatDate(thread.updatedAt, 'relative')}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </Card>
+        );
+      
+      case 'orders':
+        return (
+          <Card>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
+                <ShoppingBag className="text-saffron-500" />
                 All Orders ({orders.length})
               </h2>
               <Button variant="ghost" size="sm">
                 <Download size={16} className="mr-1" /> Export
               </Button>
             </div>
-
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
@@ -704,15 +576,53 @@ const AdminDashboard: React.FC = () => {
               </table>
             </div>
           </Card>
-        </motion.div>
-
-        {/* Book Management */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-          className="mb-6"
-        >
+        );
+      
+      case 'members':
+        return (
+          <Card>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
+                <ShoppingBag className="text-saffron-500" />
+                Members with Orders
+              </h2>
+              <Badge variant="gold" size="sm">{membersWithOrders.length} members</Badge>
+            </div>
+            <div className="space-y-3">
+              {membersWithOrders.length === 0 ? (
+                <div className="text-center py-12">
+                  <ShoppingBag className="w-16 h-16 text-earth-300 mx-auto mb-4" />
+                  <p className="text-earth-500">No members have placed orders yet</p>
+                </div>
+              ) : (
+                membersWithOrders.map((member) => (
+                  <div key={member.id} className="flex items-center gap-4 p-4 bg-earth-50 rounded-xl">
+                    <Avatar src={member.avatar} name={member.name} />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-earth-800 truncate">{member.name}</h3>
+                      <p className="text-sm text-earth-500 truncate">{member.email}</p>
+                      <div className="flex items-center gap-4 mt-2">
+                        <span className="text-xs text-earth-600">
+                          {member.orderCount} {member.orderCount === 1 ? 'order' : 'orders'}
+                        </span>
+                        <span className="text-xs font-semibold text-saffron-600">
+                          {formatCurrency(member.totalSpent)} spent
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs text-earth-500">Last order</p>
+                      <p className="text-xs text-earth-600">{formatDate(member.lastOrderDate, 'relative')}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </Card>
+        );
+      
+      case 'books':
+        return (
           <Card>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
@@ -727,7 +637,6 @@ const AdminDashboard: React.FC = () => {
                 <Plus size={16} className="mr-1" /> Add Book
               </Button>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {books.length === 0 ? (
                 <div className="col-span-full text-center py-12">
@@ -810,80 +719,75 @@ const AdminDashboard: React.FC = () => {
               )}
             </div>
           </Card>
-        </motion.div>
-
-        {/* User Management */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          >
-            <Card>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
-                  <Users className="text-saffron-500" />
+        );
+      
+      case 'users':
+        return (
+          <Card>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+              <h2 className="text-xl font-display font-semibold text-astral-500 flex items-center gap-2">
+                <Users className="text-saffron-500" />
                 User Management ({users.length})
-                </h2>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-earth-400" size={18} />
-                    <input
-                      type="text"
-                      placeholder="Search users..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border border-earth-200 rounded-lg focus:border-gold-500 focus:ring-0"
-                    />
-                  </div>
-                  <Button variant="outline" size="sm">
-                    <Filter size={16} />
-                  </Button>
+              </h2>
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-earth-400" size={18} />
+                  <input
+                    type="text"
+                    placeholder="Search users..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-earth-200 rounded-lg focus:border-gold-500 focus:ring-0"
+                  />
                 </div>
+                <Button variant="outline" size="sm">
+                  <Filter size={16} />
+                </Button>
               </div>
-
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left text-sm text-earth-500 border-b border-earth-100">
-                      <th className="pb-3 font-medium">User</th>
-                      <th className="pb-3 font-medium">Role</th>
-                      <th className="pb-3 font-medium">Last Login</th>
-                      <th className="pb-3 font-medium">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredUsers.map((user) => (
-                      <tr key={user.id} className="border-b border-earth-50 hover:bg-earth-50/50">
-                        <td className="py-4">
-                          <div className="flex items-center gap-3">
-                            <Avatar src={user.avatar} name={user.name} />
-                            <div>
-                              <p className="font-medium text-earth-800">{user.name}</p>
-                              <p className="text-sm text-earth-500">{user.email}</p>
-                            </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="text-left text-sm text-earth-500 border-b border-earth-100">
+                    <th className="pb-3 font-medium">User</th>
+                    <th className="pb-3 font-medium">Role</th>
+                    <th className="pb-3 font-medium">Last Login</th>
+                    <th className="pb-3 font-medium">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredUsers.map((user) => (
+                    <tr key={user.id} className="border-b border-earth-50 hover:bg-earth-50/50">
+                      <td className="py-4">
+                        <div className="flex items-center gap-3">
+                          <Avatar src={user.avatar} name={user.name} />
+                          <div>
+                            <p className="font-medium text-earth-800">{user.name}</p>
+                            <p className="text-sm text-earth-500">{user.email}</p>
                           </div>
-                        </td>
-                        <td className="py-4">
-                          <Badge
-                            variant={user.role === 'admin' ? 'gold' : 'neutral'}
-                            size="sm"
-                            className="capitalize"
+                        </div>
+                      </td>
+                      <td className="py-4">
+                        <Badge
+                          variant={user.role === 'admin' ? 'gold' : 'neutral'}
+                          size="sm"
+                          className="capitalize"
+                        >
+                          {user.role}
+                        </Badge>
+                      </td>
+                      <td className="py-4 text-sm text-earth-500">
+                        {user.lastLogin ? formatDate(user.lastLogin, 'relative') : 'Never'}
+                      </td>
+                      <td className="py-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => { setSelectedUser(user); setIsEditModalOpen(true); }}
+                            className="p-2 text-earth-400 hover:text-astral-500 hover:bg-astral-50 rounded-lg transition-colors"
+                            aria-label="Edit user"
                           >
-                            {user.role}
-                          </Badge>
-                        </td>
-                        <td className="py-4 text-sm text-earth-500">
-                          {user.lastLogin ? formatDate(user.lastLogin, 'relative') : 'Never'}
-                        </td>
-                        <td className="py-4">
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => { setSelectedUser(user); setIsEditModalOpen(true); }}
-                              className="p-2 text-earth-400 hover:text-astral-500 hover:bg-astral-50 rounded-lg transition-colors"
-                              aria-label="Edit user"
-                            >
-                              <Edit size={16} />
-                            </button>
+                            <Edit size={16} />
+                          </button>
                           {user.role !== 'admin' && (
                             <button
                               onClick={() => { setSelectedUser(user); setIsDeleteModalOpen(true); }}
@@ -893,15 +797,214 @@ const AdminDashboard: React.FC = () => {
                               <Trash2 size={16} />
                             </button>
                           )}
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        );
+      
+      default:
+        return null;
+    }
+  };
+
+  const sidebarItems = [
+    { id: 'communications' as AdminSection, label: 'Client Communications', icon: MessageCircle, count: chatThreads.length },
+    { id: 'orders' as AdminSection, label: 'All Orders', icon: ShoppingBag, count: orders.length },
+    { id: 'members' as AdminSection, label: 'Members with Orders', icon: UserCheck, count: membersWithOrders.length },
+    { id: 'books' as AdminSection, label: 'Book Management', icon: BookOpen, count: books.length },
+    { id: 'users' as AdminSection, label: 'User Management', icon: Users, count: users.length },
+  ];
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-earth-50 flex">
+      {/* Left Sidebar */}
+      <aside className="w-64 bg-white/80 backdrop-blur-md border-r border-earth-200/50 flex-shrink-0 hidden lg:block relative z-10 shadow-lg">
+        <div className="p-6 border-b border-earth-200/50">
+          <h1 className="text-2xl font-display font-bold text-astral-500 mb-1">Admin Panel</h1>
+          <p className="text-sm text-earth-500">Management Dashboard</p>
+        </div>
+        
+        <nav className="p-4 space-y-1">
+          {sidebarItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveSection(item.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                  isActive
+                    ? 'bg-saffron-50 text-saffron-600 font-medium shadow-sm'
+                    : 'text-earth-700 hover:bg-earth-50 hover:text-saffron-600'
+                }`}
+              >
+                <Icon size={20} />
+                <span className="flex-1 text-left">{item.label}</span>
+                {item.count > 0 && (
+                  <Badge variant={isActive ? 'saffron' : 'neutral'} size="sm">
+                    {item.count}
+                  </Badge>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col relative overflow-hidden">
+        <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8 overflow-y-auto">
+          {/* Header */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8"
+          >
+            <h2 className="text-3xl font-display font-bold text-astral-500">
+              {sidebarItems.find(item => item.id === activeSection)?.label || 'Admin Panel'}
+            </h2>
+            <p className="text-earth-500 mt-1">Manage your {activeSection} efficiently</p>
           </motion.div>
+
+          {/* Stats Grid - Only show on communications section */}
+          {activeSection === 'communications' && (
+            <>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+              >
+                <StatCard
+                  title="Total Users"
+                  value={stats?.totalUsers || 0}
+                  icon={Users}
+                  color="bg-saffron-500"
+                />
+                <StatCard
+                  title="Active Chats"
+                  value={stats?.activeChats || 0}
+                  icon={MessageCircle}
+                  color="bg-astral-500"
+                />
+                <StatCard
+                  title="Chatting Members"
+                  value={stats?.chattingMembers || 0}
+                  icon={UserCheck}
+                  color="bg-gold-500"
+                />
+                <StatCard
+                  title="Total Orders"
+                  value={stats?.totalOrders || 0}
+                  icon={ShoppingBag}
+                  color="bg-green-500"
+                />
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+                className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
+              >
+                <StatCard
+                  title="Members with Orders"
+                  value={stats?.membersWithOrders || 0}
+                  icon={BookOpen}
+                  color="bg-purple-500"
+                />
+                <StatCard
+                  title="Total Revenue"
+                  value={formatCurrency(stats?.revenue || 0)}
+                  icon={DollarSign}
+                  color="bg-green-500"
+                />
+                <StatCard
+                  title="Pending Reviews"
+                  value={stats?.pendingReviews || 0}
+                  icon={FileText}
+                  color="bg-gold-500"
+                />
+              </motion.div>
+            </>
+          )}
+
+          {/* Section Content */}
+          <motion.div
+            key={activeSection}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {renderSectionContent()}
+          </motion.div>
+        </div>
+      </div>
+
+        {/* Stats Grid */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+        >
+          <StatCard
+            title="Total Users"
+            value={stats?.totalUsers || 0}
+            icon={Users}
+            color="bg-saffron-500"
+          />
+          <StatCard
+            title="Active Chats"
+            value={stats?.activeChats || 0}
+            icon={MessageCircle}
+            color="bg-astral-500"
+          />
+          <StatCard
+            title="Chatting Members"
+            value={stats?.chattingMembers || 0}
+            icon={UserCheck}
+            color="bg-gold-500"
+          />
+          <StatCard
+            title="Total Orders"
+            value={stats?.totalOrders || 0}
+            icon={ShoppingBag}
+            color="bg-green-500"
+          />
+        </motion.div>
+
+        {/* Second Stats Row */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8"
+        >
+          <StatCard
+            title="Members with Orders"
+            value={stats?.membersWithOrders || 0}
+            icon={BookOpen}
+            color="bg-purple-500"
+          />
+          <StatCard
+            title="Total Revenue"
+            value={formatCurrency(stats?.revenue || 0)}
+            icon={DollarSign}
+            color="bg-green-500"
+          />
+          <StatCard
+            title="Pending Reviews"
+            value={stats?.pendingReviews || 0}
+            icon={FileText}
+            color="bg-gold-500"
+          />
+        </motion.div>
+
 
         {/* Order Detail Modal */}
         <Modal
