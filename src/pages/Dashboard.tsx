@@ -468,11 +468,13 @@ const ExistingHouseDashboard: React.FC<ExistingHouseDashboardProps> = ({ data })
 };
 
 // Plan To Buy Dashboard Component
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface PlanToBuyDashboardProps {
   data: typeof planToBuyData;
   threads: ChatThread[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const PlanToBuyDashboard: React.FC<PlanToBuyDashboardProps> = ({ data }) => {
   return (
     <div className="space-y-6">
