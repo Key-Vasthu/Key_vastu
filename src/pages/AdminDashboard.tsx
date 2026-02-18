@@ -24,8 +24,6 @@ import {
   Upload,
   X,
   UserCircle,
-  LogOut,
-  Settings,
 } from 'lucide-react';
 import { Button, Card, Badge, Avatar, Input, Loading, Modal } from '../components/common';
 import { adminApi, booksApi } from '../utils/api';
@@ -92,7 +90,7 @@ type AdminSection = 'communications' | 'orders' | 'members' | 'books' | 'users';
 
 const AdminDashboard: React.FC = () => {
   const { addNotification } = useNotification();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [activeSection, setActiveSection] = useState<AdminSection>('communications');
   const [stats, setStats] = useState<any>(null);
   const [users, setUsers] = useState<User[]>([]);
