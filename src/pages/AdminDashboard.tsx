@@ -136,34 +136,51 @@ const AdminDashboard: React.FC = () => {
   const [isAdminProfileModalOpen, setIsAdminProfileModalOpen] = useState(false);
 
   useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
+    let isInitialLoad = true;
+    
+    const loadData = async (isInitial = false) => {
+      // Only show loading spinner on initial load
+      if (isInitial) {
+        setIsLoading(true);
+      }
+      
       try {
         const [statsRes, usersRes, ordersRes, threadsRes, membersRes, booksRes] = await Promise.all([
           adminApi.getStats(),
-        adminApi.getUsers(),
+          adminApi.getUsers(),
           adminApi.getOrders(),
           adminApi.getChatThreads(),
           adminApi.getMembersWithOrders(),
           booksApi.getBooks(),
-      ]);
-      
-      if (statsRes.success && statsRes.data) setStats(statsRes.data);
-      if (usersRes.success && usersRes.data) setUsers(usersRes.data);
+        ]);
+        
+        if (statsRes.success && statsRes.data) setStats(statsRes.data);
+        if (usersRes.success && usersRes.data) setUsers(usersRes.data);
         if (ordersRes.success && ordersRes.data) setOrders(ordersRes.data);
         if (threadsRes.success && threadsRes.data) setChatThreads(threadsRes.data);
         if (membersRes.success && membersRes.data) setMembersWithOrders(membersRes.data);
         if (booksRes.success && booksRes.data) setBooks(booksRes.data);
       } catch (error) {
         console.error('Error loading admin data:', error);
-        addNotification('error', 'Loading Error', 'Failed to load admin panel data.');
+        // Only show error notification on initial load to avoid spam
+        if (isInitial) {
+          addNotification('error', 'Loading Error', 'Failed to load admin panel data.');
+        }
       }
-      setIsLoading(false);
+      
+      if (isInitial) {
+        setIsLoading(false);
+      }
     };
     
-    loadData();
-    // Refresh data every 30 seconds
-    const interval = setInterval(loadData, 30000);
+    // Initial load with loading spinner
+    loadData(true);
+    
+    // Auto-refresh data every 60 seconds (increased from 30) without showing loading spinner
+    const interval = setInterval(() => {
+      loadData(false);
+    }, 60000);
+    
     return () => clearInterval(interval);
   }, [addNotification]);
 
