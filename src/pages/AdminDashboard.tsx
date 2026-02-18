@@ -23,10 +23,14 @@ import {
   Plus,
   Upload,
   X,
+  UserCircle,
+  LogOut,
+  Settings,
 } from 'lucide-react';
 import { Button, Card, Badge, Avatar, Input, Loading, Modal } from '../components/common';
 import { adminApi, booksApi } from '../utils/api';
 import { useNotification } from '../contexts/NotificationContext';
+import { useAuth } from '../contexts/AuthContext';
 import { formatDate, formatCurrency } from '../utils/helpers';
 import type { User, Order, ChatMessage, Book } from '../types';
 
@@ -88,6 +92,7 @@ type AdminSection = 'communications' | 'orders' | 'members' | 'books' | 'users';
 
 const AdminDashboard: React.FC = () => {
   const { addNotification } = useNotification();
+  const { user, logout } = useAuth();
   const [activeSection, setActiveSection] = useState<AdminSection>('communications');
   const [stats, setStats] = useState<any>(null);
   const [users, setUsers] = useState<User[]>([]);
@@ -823,13 +828,57 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-50 to-earth-50 flex">
       {/* Left Sidebar */}
-      <aside className="w-64 bg-white/80 backdrop-blur-md border-r border-earth-200/50 flex-shrink-0 hidden lg:block relative z-10 shadow-lg">
+      <aside className="w-64 bg-white/80 backdrop-blur-md border-r border-earth-200/50 flex-shrink-0 hidden lg:block relative z-10 shadow-lg flex flex-col">
+        {/* Admin Profile Section */}
         <div className="p-6 border-b border-earth-200/50">
-          <h1 className="text-2xl font-display font-bold text-astral-500 mb-1">Admin Panel</h1>
-          <p className="text-sm text-earth-500">Management Dashboard</p>
+          <div className="flex items-center gap-3 mb-4">
+            <Avatar
+              src={user?.avatar}
+              name={user?.name || 'Admin'}
+              size="lg"
+            />
+            <div className="flex-1 min-w-0">
+              <h2 className="font-semibold text-earth-800 truncate">{user?.name || 'Admin'}</h2>
+              <p className="text-xs text-earth-500 truncate">{user?.email || 'admin@keyvasthu.com'}</p>
+              <Badge variant="gold" size="sm" className="mt-1">
+                <UserCircle size={12} className="mr-1" />
+                Administrator
+              </Badge>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              onClick={() => {
+                // Navigate to profile settings if available
+                addNotification('info', 'Settings', 'Profile settings coming soon!');
+              }}
+            >
+              <Settings size={14} className="mr-1" />
+              Settings
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={async () => {
+                await logout();
+                addNotification('success', 'Logged Out', 'You have been logged out successfully.');
+              }}
+              className="text-red-500 hover:text-red-600 hover:bg-red-50"
+            >
+              <LogOut size={14} />
+            </Button>
+          </div>
         </div>
-        
-        <nav className="p-4 space-y-1">
+
+        {/* Navigation Section */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 border-b border-earth-200/50">
+            <h3 className="text-xs font-semibold text-earth-400 uppercase tracking-wider mb-3">Navigation</h3>
+          </div>
+          <nav className="p-4 space-y-1">
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
@@ -853,7 +902,8 @@ const AdminDashboard: React.FC = () => {
               </button>
             );
           })}
-        </nav>
+          </nav>
+        </div>
       </aside>
 
       {/* Main Content Area */}
