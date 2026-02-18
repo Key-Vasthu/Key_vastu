@@ -1402,7 +1402,6 @@ const AdminDashboard: React.FC = () => {
             </div>
           </form>
         </Modal>
-      </div>
     </div>
   );
 };
