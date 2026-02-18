@@ -8,7 +8,6 @@ import {
   MessageCircle,
   PenTool,
   Users,
-  Award,
   Building2,
   ChevronRight,
   Quote,

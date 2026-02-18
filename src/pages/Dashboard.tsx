@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   MessageCircle,
   FileText,
   BookOpen,
-  Bell,
   Clock,
   Upload,
   ChevronRight,
@@ -17,20 +16,15 @@ import {
   AlertCircle,
   Eye,
   Download,
-  Sparkles,
-  ArrowRight,
   MapPin,
   Compass,
-  FileCheck,
   MessageSquare,
   Pencil,
   PenTool,
 } from 'lucide-react';
-import { Button, Card, Badge, Avatar, Loading } from '../components/common';
+import { Button, Card, Badge, Loading } from '../components/common';
 import { useAuth } from '../contexts/AuthContext';
-import { chatApi, dashboardApi } from '../utils/api';
 import { formatDate, cn } from '../utils/helpers';
-import type { ChatThread, Activity } from '../types';
 
 // Project type for user workflow
 type ProjectType = 'existing' | 'planning' | null;
@@ -331,11 +325,13 @@ const getStatusIcon = (status: string) => {
 };
 
 // Existing House Dashboard Component (kept for potential future use)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface ExistingHouseDashboardProps {
   data: typeof existingHouseData;
   threads: ChatThread[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ExistingHouseDashboard: React.FC<ExistingHouseDashboardProps> = ({ data }) => {
   return (
     <div className="space-y-6">

@@ -6,8 +6,6 @@ import {
   X,
   Home,
   BookOpen,
-  MessageCircle,
-  PenTool,
   User,
   ShoppingCart,
   LogIn,
@@ -15,7 +13,6 @@ import {
   ChevronDown,
   Info,
   FileText,
-  Settings,
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useCart } from '../../contexts/CartContext';
