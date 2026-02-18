@@ -25,6 +25,7 @@ import {
 import { Button, Card, Badge, Loading } from '../components/common';
 import { useAuth } from '../contexts/AuthContext';
 import { formatDate, cn } from '../utils/helpers';
+import type { ChatThread } from '../types';
 
 // Project type for user workflow
 type ProjectType = 'existing' | 'planning' | null;
@@ -467,15 +468,14 @@ const ExistingHouseDashboard: React.FC<ExistingHouseDashboardProps> = ({ data })
   );
 };
 
-// Plan To Buy Dashboard Component
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// Plan To Buy Dashboard Component (kept for potential future use)
 interface PlanToBuyDashboardProps {
   data: typeof planToBuyData;
   threads: ChatThread[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const PlanToBuyDashboard: React.FC<PlanToBuyDashboardProps> = ({ data }) => {
+// Component kept for future use - exported but not currently used
+export const PlanToBuyDashboard: React.FC<PlanToBuyDashboardProps> = ({ data }) => {
   return (
     <div className="space-y-6">
       {/* Project Header Card */}
