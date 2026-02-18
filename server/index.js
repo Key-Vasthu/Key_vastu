@@ -57,6 +57,52 @@ app.use((req, res, next) => {
   }
 })();
 
+// Root API endpoint - shows server is running
+app.get('/api', (req, res) => {
+  res.json({
+    success: true,
+    message: 'KeyVasthu API Server is running successfully! 🚀',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login',
+      },
+      chat: {
+        threads: 'GET /api/chat/threads',
+        messages: 'GET /api/chat/threads/:threadId/messages',
+        sendMessage: 'POST /api/chat/threads/:threadId/messages',
+        maintainerThread: 'GET /api/chat/maintainer-thread',
+      },
+      files: {
+        upload: 'POST /api/files/upload',
+        delete: 'DELETE /api/files/:key',
+      },
+      books: {
+        list: 'GET /api/books',
+        create: 'POST /api/books',
+        update: 'PUT /api/books/:id',
+        delete: 'DELETE /api/books/:id',
+      },
+      orders: {
+        create: 'POST /api/orders',
+        list: 'GET /api/orders',
+      },
+      admin: {
+        dashboard: 'GET /api/admin/dashboard',
+        orders: 'GET /api/admin/orders',
+      },
+    },
+    status: {
+      server: 'running',
+      database: process.env.DATABASE_URL ? 'configured' : 'not configured',
+      r2Storage: process.env.R2_BUCKET_NAME ? 'configured' : 'not configured',
+    },
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
@@ -139,9 +185,24 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📊 Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
-  console.log(`☁️  R2 Storage: ${process.env.R2_BUCKET_NAME ? 'Configured' : 'Not configured'}`);
-  console.log(`🔗 API endpoints available at http://localhost:${PORT}/api`);
+  console.log('\n' + '='.repeat(60));
+  console.log('🚀 KeyVasthu Backend Server');
+  console.log('='.repeat(60));
+  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`📊 Database: ${process.env.DATABASE_URL ? '✅ Connected' : '❌ Not configured'}`);
+  console.log(`☁️  R2 Storage: ${process.env.R2_BUCKET_NAME ? '✅ Configured' : '❌ Not configured'}`);
+  console.log('='.repeat(60));
+  console.log(`🔗 API Root: http://localhost:${PORT}/api`);
+  console.log(`💚 Health Check: http://localhost:${PORT}/api/health`);
+  console.log('='.repeat(60));
+  console.log('📝 Available API Routes:');
+  console.log('   • POST   /api/auth/register');
+  console.log('   • POST   /api/auth/login');
+  console.log('   • GET    /api/chat/threads');
+  console.log('   • POST   /api/chat/threads/:threadId/messages');
+  console.log('   • POST   /api/files/upload');
+  console.log('   • GET    /api/books');
+  console.log('   • POST   /api/orders');
+  console.log('='.repeat(60) + '\n');
 });
 
